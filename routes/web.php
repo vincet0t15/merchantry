@@ -25,7 +25,9 @@ Route::middleware(['auth', 'active'])->group(function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
 
-    Route::resource('branches', BranchController::class)->except(['show']);
+    Route::resource('branches', BranchController::class)
+        ->except(['show'])
+        ->middleware('can-manage-branches');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });
