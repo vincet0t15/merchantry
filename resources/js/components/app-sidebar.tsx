@@ -68,12 +68,14 @@ const data = {
                 {
                     title: 'Categories',
                     url: '/categories',
-                    icon: Settings2,
                 },
                 {
                     title: 'Units',
                     url: '/units',
-                    icon: Settings2,
+                },
+                {
+                    title: 'Payment methods',
+                    url: '/payment-methods',
                 },
             ],
         },

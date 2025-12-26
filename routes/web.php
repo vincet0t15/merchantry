@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
@@ -43,6 +44,10 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::resource('units', UnitController::class)
         ->only(['index', 'store', 'update', 'destroy'])
         ->middleware('can-manage-catalog');
+
+    Route::resource('payment-methods', PaymentMethodController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->middleware('can-manage-users');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });
