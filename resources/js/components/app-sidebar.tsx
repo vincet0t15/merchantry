@@ -45,6 +45,11 @@ const data = {
             icon: Settings2,
         },
         {
+            title: 'Inventory',
+            url: '/inventory',
+            icon: Store,
+        },
+        {
             title: 'Stores',
             url: '#',
             icon: Store,

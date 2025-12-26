@@ -4,6 +4,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PaymentMethodController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
@@ -48,6 +50,22 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::resource('payment-methods', PaymentMethodController::class)
         ->only(['index', 'store', 'update', 'destroy'])
         ->middleware('can-manage-users');
+
+    Route::get('inventory', [ProductController::class, 'index'])
+        ->name('inventory.index')
+        ->middleware('can-manage-catalog');
+
+    Route::get('inventory/create', [ProductController::class, 'create'])
+        ->name('inventory.create')
+        ->middleware('can-manage-catalog');
+
+    Route::resource('products', ProductController::class)
+        ->only(['edit', 'store', 'update', 'destroy'])
+        ->middleware('can-manage-catalog');
+
+    Route::post('stock-adjustments', [StockAdjustmentController::class, 'store'])
+        ->name('stock-adjustments.store')
+        ->middleware('can-manage-catalog');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });
