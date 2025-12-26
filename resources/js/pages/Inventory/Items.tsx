@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Head, Link } from '@inertiajs/react';
+import { AlertTriangle, DollarSign, Package, Pencil } from 'lucide-react';
 
 type Category = {
     id: number;
@@ -29,6 +30,7 @@ type Product = {
     category_id: number | null;
     unit_id: number | null;
     price: number | string;
+    cost: number | string;
     is_active: boolean;
     category?: Category | null;
     unit?: Unit | null;
@@ -36,6 +38,7 @@ type Product = {
         id: number;
         branch_id: number;
         quantity: number;
+        reorder_level: number;
         branch?: Branch | null;
     }[];
 };
@@ -47,17 +50,42 @@ type ItemsPageProps = {
     branches: Branch[];
 };
 
-const formatPrice = (price: number | string): string => {
-    const numeric = typeof price === 'number' ? price : typeof price === 'string' ? parseFloat(price) : NaN;
+const formatCurrency = (amount: number | string): string => {
+    const numeric = typeof amount === 'number' ? amount : typeof amount === 'string' ? parseFloat(amount) : NaN;
 
     if (!Number.isFinite(numeric)) {
-        return String(price);
+        return '0.00';
     }
 
-    return numeric.toFixed(2);
+    return numeric.toLocaleString('en-PH', {
+        style: 'currency',
+        currency: 'PHP',
+    });
 };
 
 export default function ItemsPage({ products }: ItemsPageProps) {
+    // Calculate stats
+    const stats = products.reduce(
+        (acc, product) => {
+            const totalStock = product.stocks?.reduce((sum, stock) => sum + stock.quantity, 0) ?? 0;
+            const totalReorderLevel = product.stocks?.reduce((sum, stock) => sum + stock.reorder_level, 0) ?? 0;
+            const cost = typeof product.cost === 'number' ? product.cost : parseFloat(String(product.cost)) || 0;
+
+            // Inventory Value
+            acc.inventoryValue += totalStock * cost;
+
+            // Stock Status
+            if (totalStock === 0) {
+                acc.outOfStock++;
+            } else if (totalStock <= totalReorderLevel) {
+                acc.lowStock++;
+            }
+
+            return acc;
+        },
+        { outOfStock: 0, lowStock: 0, inventoryValue: 0 },
+    );
+
     return (
         <>
             <Head title="Inventory items" />
@@ -80,52 +108,116 @@ export default function ItemsPage({ products }: ItemsPageProps) {
                                 </BreadcrumbList>
                             </Breadcrumb>
                         </div>
-                        <Button asChild>
-                            <Link href="/inventory/create">New Item</Link>
-                        </Button>
                     </header>
-                    <div className="flex flex-1 flex-col gap-4 p-4 pt-4">
-                        <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                            <div className="mb-4 flex items-center justify-between gap-2">
-                                <div>
-                                    <h1 className="text-base font-semibold tracking-tight">Inventory items</h1>
-                                    <p className="text-xs text-slate-600">Ito lang yung products na may stock at mino-monitor ang movement.</p>
+                    <div className="flex flex-1 flex-col gap-6 p-4 pt-6">
+                        {/* Stats Cards */}
+                        <div className="grid gap-4 md:grid-cols-3">
+                            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                                <div className="flex items-center gap-4">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-red-50 text-red-600">
+                                        <AlertTriangle className="h-6 w-6" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-slate-500">Out of Stock</p>
+                                        <p className="text-2xl font-bold text-red-600">{stats.outOfStock}</p>
+                                    </div>
                                 </div>
                             </div>
+                            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                                <div className="flex items-center gap-4">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-orange-50 text-orange-600">
+                                        <Package className="h-6 w-6" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-slate-500">Low Stock</p>
+                                        <p className="text-2xl font-bold text-orange-600">{stats.lowStock}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                                <div className="flex items-center gap-4">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
+                                        <DollarSign className="h-6 w-6" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-medium text-slate-500">Inventory Value</p>
+                                        <p className="text-2xl font-bold text-emerald-600">{formatCurrency(stats.inventoryValue)}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Items Table */}
+                        <div className="rounded-xl border border-slate-200 bg-white shadow-sm">
+                            <div className="border-b border-slate-200 px-6 py-4">
+                                <h2 className="text-base font-semibold text-slate-900">Inventory Items</h2>
+                            </div>
                             {products.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center">
-                                    <p className="text-sm font-medium text-slate-700">Wala pang inventory items</p>
-                                    <p className="max-w-sm text-xs text-slate-600">Gumawa ng product na may initial stock para lumabas dito.</p>
+                                <div className="flex flex-col items-center justify-center gap-2 px-6 py-10 text-center">
+                                    <p className="text-sm font-medium text-slate-700">No inventory items found</p>
+                                    <p className="max-w-sm text-xs text-slate-600">Items with tracking enabled will appear here.</p>
                                 </div>
                             ) : (
                                 <div className="overflow-x-auto">
-                                    <table className="min-w-full table-auto text-left text-sm">
+                                    <table className="min-w-full text-left text-sm">
                                         <thead>
                                             <tr className="border-b border-slate-200 bg-slate-50 text-xs font-semibold tracking-wide text-slate-500 uppercase">
-                                                <th className="px-3 py-2">Name</th>
-                                                <th className="px-3 py-2">SKU</th>
-                                                <th className="px-3 py-2 text-right">Total stock</th>
-                                                <th className="px-3 py-2 text-right">Total value</th>
-                                                <th className="px-3 py-2 text-right">Actions</th>
+                                                <th className="px-6 py-3">Name</th>
+                                                <th className="px-6 py-3">SKU</th>
+                                                <th className="px-6 py-3">Status</th>
+                                                <th className="px-6 py-3">Stock</th>
+                                                <th className="px-6 py-3">Reorder Level</th>
+                                                <th className="px-6 py-3 text-right">Cost</th>
+                                                <th className="px-6 py-3 text-right">Actions</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody className="divide-y divide-slate-100">
                                             {products.map((product) => {
                                                 const totalStock = product.stocks?.reduce((total, stock) => total + stock.quantity, 0) ?? 0;
-                                                const totalValue =
-                                                    typeof product.price === 'number'
-                                                        ? product.price * totalStock
-                                                        : parseFloat(String(product.price)) * totalStock;
+                                                const totalReorderLevel = product.stocks?.reduce((sum, stock) => sum + stock.reorder_level, 0) ?? 0;
+                                                const cost = typeof product.cost === 'number' ? product.cost : parseFloat(String(product.cost)) || 0;
+
+                                                let statusBadge;
+                                                if (totalStock === 0) {
+                                                    statusBadge = (
+                                                        <span className="inline-flex items-center rounded-full bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-red-600/10 ring-inset">
+                                                            Out of Stock
+                                                        </span>
+                                                    );
+                                                } else if (totalStock <= totalReorderLevel) {
+                                                    statusBadge = (
+                                                        <span className="inline-flex items-center rounded-full bg-orange-50 px-2 py-1 text-xs font-medium text-orange-700 ring-1 ring-orange-600/10 ring-inset">
+                                                            Low Stock
+                                                        </span>
+                                                    );
+                                                } else {
+                                                    statusBadge = (
+                                                        <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-1 text-xs font-medium text-emerald-700 ring-1 ring-emerald-600/10 ring-inset">
+                                                            In Stock
+                                                        </span>
+                                                    );
+                                                }
 
                                                 return (
-                                                    <tr key={product.id} className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/60">
-                                                        <td className="px-3 py-2 text-sm font-medium text-slate-900">{product.name}</td>
-                                                        <td className="px-3 py-2 text-xs text-slate-600">{product.sku}</td>
-                                                        <td className="px-3 py-2 text-right text-xs text-slate-700">{totalStock}</td>
-                                                        <td className="px-3 py-2 text-right text-xs text-slate-700">₱ {formatPrice(totalValue)}</td>
-                                                        <td className="px-3 py-2 text-right text-xs">
-                                                            <Button variant="outline" size="sm" asChild>
-                                                                <Link href={`/products/${product.id}/stock`}>Stock details</Link>
+                                                    <tr key={product.id} className="hover:bg-slate-50/50">
+                                                        <td className="px-6 py-4 font-medium text-slate-900">{product.name}</td>
+                                                        <td className="px-6 py-4 text-slate-500">{product.sku}</td>
+                                                        <td className="px-6 py-4">{statusBadge}</td>
+                                                        <td className="px-6 py-4 text-slate-700">
+                                                            {totalStock} {product.unit?.code}
+                                                        </td>
+                                                        <td className="px-6 py-4 text-slate-700">{totalReorderLevel}</td>
+                                                        <td className="px-6 py-4 text-right text-slate-700">{formatCurrency(cost)}</td>
+                                                        <td className="px-6 py-4 text-right">
+                                                            <Button
+                                                                variant="ghost"
+                                                                size="icon"
+                                                                asChild
+                                                                className="h-8 w-8 text-slate-400 hover:text-slate-600"
+                                                            >
+                                                                <Link href={`/products/${product.id}/edit`}>
+                                                                    <Pencil className="h-4 w-4" />
+                                                                </Link>
                                                             </Button>
                                                         </td>
                                                     </tr>

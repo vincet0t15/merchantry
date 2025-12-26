@@ -16,7 +16,7 @@ class ProductController extends Controller
     {
         $products = Product::with(['category', 'unit', 'stocks.branch'])
             ->orderBy('name')
-            ->get(['id', 'name', 'sku', 'type', 'category_id', 'unit_id', 'price', 'is_active']);
+            ->get(['id', 'name', 'sku', 'type', 'category_id', 'unit_id', 'price', 'cost', 'is_active']);
 
         $categories = Category::orderBy('name')->get(['id', 'name']);
         $units = Unit::orderBy('name')->get(['id', 'name', 'code']);
@@ -35,7 +35,7 @@ class ProductController extends Controller
         $products = Product::with(['category', 'unit', 'stocks.branch'])
             ->whereHas('stocks')
             ->orderBy('name')
-            ->get(['id', 'name', 'sku', 'type', 'category_id', 'unit_id', 'price', 'is_active']);
+            ->get(['id', 'name', 'sku', 'type', 'category_id', 'unit_id', 'price', 'cost', 'is_active']);
 
         $categories = Category::orderBy('name')->get(['id', 'name']);
         $units = Unit::orderBy('name')->get(['id', 'name', 'code']);
@@ -66,10 +66,12 @@ class ProductController extends Controller
     {
         $categories = Category::orderBy('name')->get(['id', 'name']);
         $units = Unit::orderBy('name')->get(['id', 'name', 'code']);
+        $branches = Branch::orderBy('name')->get(['id', 'name']);
 
         return Inertia::render('Products/Create', [
             'categories' => $categories,
             'units' => $units,
+            'branches' => $branches,
         ]);
     }
 
@@ -114,10 +116,12 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'sku' => ['required', 'string', 'max:255', 'unique:products,sku'],
+            'barcode' => ['nullable', 'string', 'max:255'],
             'type' => ['required', 'string', 'in:product,menu,consignment'],
             'category_id' => ['nullable', 'integer', 'exists:categories,id'],
             'unit_id' => ['nullable', 'integer', 'exists:units,id'],
             'price' => ['required', 'numeric', 'min:0'],
+            'cost' => ['nullable', 'numeric', 'min:0'],
             'is_active' => ['boolean'],
             'stocks' => ['nullable', 'array'],
             'stocks.*.branch_id' => ['required_with:stocks.*.initial_quantity,stocks.*.reorder_level', 'integer', 'exists:branches,id'],
@@ -130,10 +134,12 @@ class ProductController extends Controller
         $product = Product::create([
             'name' => $validated['name'],
             'sku' => $validated['sku'],
+            'barcode' => $validated['barcode'] ?? null,
             'type' => $validated['type'],
             'category_id' => $validated['category_id'] ?? null,
             'unit_id' => $validated['unit_id'] ?? null,
             'price' => $validated['price'],
+            'cost' => $validated['cost'] ?? 0,
             'is_active' => $validated['is_active'],
         ]);
 
@@ -167,10 +173,12 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'sku' => ['required', 'string', 'max:255', 'unique:products,sku,' . $product->id],
+            'barcode' => ['nullable', 'string', 'max:255'],
             'type' => ['required', 'string', 'in:product,menu,consignment'],
             'category_id' => ['nullable', 'integer', 'exists:categories,id'],
             'unit_id' => ['nullable', 'integer', 'exists:units,id'],
             'price' => ['required', 'numeric', 'min:0'],
+            'cost' => ['nullable', 'numeric', 'min:0'],
             'is_active' => ['boolean'],
             'stocks' => ['nullable', 'array'],
             'stocks.*.branch_id' => ['required_with:stocks.*.reorder_level', 'integer', 'exists:branches,id'],
@@ -180,10 +188,12 @@ class ProductController extends Controller
         $data = [
             'name' => $validated['name'],
             'sku' => $validated['sku'],
+            'barcode' => $validated['barcode'] ?? null,
             'type' => $validated['type'],
             'category_id' => $validated['category_id'] ?? null,
             'unit_id' => $validated['unit_id'] ?? null,
             'price' => $validated['price'],
+            'cost' => $validated['cost'] ?? 0,
             'is_active' => $request->boolean('is_active', true),
         ];
 

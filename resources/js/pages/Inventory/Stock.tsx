@@ -96,11 +96,6 @@ export default function StockPage({ product, stocks, branches, adjustments }: St
         );
     };
 
-    const getBranchQuantity = (branchId: number) => {
-        const stock = stocks.find((s) => s.branch_id === branchId);
-        return stock?.quantity ?? 0;
-    };
-
     const formatQuantityChange = (value: number) => {
         if (value > 0) {
             return `+${value}`;
