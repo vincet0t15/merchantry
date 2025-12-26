@@ -63,6 +63,10 @@ Route::middleware(['auth', 'active'])->group(function () {
         ->only(['edit', 'store', 'update', 'destroy'])
         ->middleware('can-manage-catalog');
 
+    Route::get('products/{product}/stock', [StockAdjustmentController::class, 'index'])
+        ->name('products.stock')
+        ->middleware('can-manage-catalog');
+
     Route::post('stock-adjustments', [StockAdjustmentController::class, 'store'])
         ->name('stock-adjustments.store')
         ->middleware('can-manage-catalog');

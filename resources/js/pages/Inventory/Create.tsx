@@ -83,116 +83,119 @@ export default function Create({ categories, units }: CreateProps) {
                         </Button>
                     </header>
                     <div className="flex flex-1 flex-col gap-4 p-4 pt-4">
-                        <div className="mx-auto w-full max-w-xl rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                            <div className="mb-4">
+                        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                            <div className="mb-6">
                                 <h1 className="text-base font-semibold tracking-tight">New inventory item</h1>
-                                <p className="text-xs text-slate-600">
-                                    Add a product you sell so you can track it in POS.
-                                </p>
+                                <p className="text-xs text-slate-600">Add a product you sell so you can track it in POS.</p>
                             </div>
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <FieldGroup>
-                                    <Field>
-                                        <FieldLabel htmlFor="name">Item name</FieldLabel>
-                                        <Input
-                                            id="name"
-                                            type="text"
-                                            autoFocus
-                                            placeholder="Bottled water 500ml"
-                                            value={data.name}
-                                            onChange={(event) => setData('name', event.target.value)}
-                                            required
-                                        />
-                                    </Field>
-                                    <Field>
-                                        <FieldLabel htmlFor="sku">SKU / Code</FieldLabel>
-                                        <Input
-                                            id="sku"
-                                            type="text"
-                                            placeholder="SKU-0001"
-                                            value={data.sku}
-                                            onChange={(event) => setData('sku', event.target.value)}
-                                            required
-                                        />
-                                        <FieldDescription>
-                                            Unique identifier used in barcodes, imports, and reports.
-                                        </FieldDescription>
-                                    </Field>
-                                    <Field>
-                                        <FieldLabel htmlFor="category_id">Category</FieldLabel>
-                                        <Select
-                                            value={data.category_id !== null ? String(data.category_id) : 'none'}
-                                            onValueChange={(value) =>
-                                                setData('category_id', value === 'none' ? null : Number(value))
-                                            }
-                                        >
-                                            <SelectTrigger id="category_id" className="mt-1 w-full text-xs">
-                                                <SelectValue placeholder="No category" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="none">No category</SelectItem>
-                                                {categories.map((category) => (
-                                                    <SelectItem key={category.id} value={String(category.id)}>
-                                                        {category.name}
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </Field>
-                                    <Field>
-                                        <FieldLabel htmlFor="unit_id">Unit of measure</FieldLabel>
-                                        <Select
-                                            value={data.unit_id !== null ? String(data.unit_id) : 'none'}
-                                            onValueChange={(value) =>
-                                                setData('unit_id', value === 'none' ? null : Number(value))
-                                            }
-                                        >
-                                            <SelectTrigger id="unit_id" className="mt-1 w-full text-xs">
-                                                <SelectValue placeholder="Select unit" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="none">No unit</SelectItem>
-                                                {units.map((unit) => (
-                                                    <SelectItem key={unit.id} value={String(unit.id)}>
-                                                        {unit.name} ({unit.code})
-                                                    </SelectItem>
-                                                ))}
-                                            </SelectContent>
-                                        </Select>
-                                    </Field>
-                                    <Field>
-                                        <FieldLabel htmlFor="price">Selling price</FieldLabel>
-                                        <Input
-                                            id="price"
-                                            type="number"
-                                            min="0"
-                                            step="0.01"
-                                            placeholder="0.00"
-                                            value={data.price}
-                                            onChange={(event) => setData('price', event.target.value)}
-                                            required
-                                        />
-                                    </Field>
-                                    <Field>
-                                        <label className="inline-flex items-center gap-2 text-xs text-slate-700">
-                                            <input
-                                                type="checkbox"
-                                                checked={data.is_active}
-                                                onChange={(event) => setData('is_active', event.target.checked)}
-                                                className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                            <form onSubmit={handleSubmit} className="space-y-8">
+                                <div>
+                                    <h2 className="mb-4 text-xs font-semibold tracking-wide text-slate-500 uppercase">Details</h2>
+                                    <FieldGroup className="grid gap-4 md:grid-cols-2">
+                                        <Field>
+                                            <FieldLabel htmlFor="name">Name</FieldLabel>
+                                            <Input
+                                                id="name"
+                                                type="text"
+                                                autoFocus
+                                                placeholder="Bottled water 500ml"
+                                                value={data.name}
+                                                onChange={(event) => setData('name', event.target.value)}
+                                                required
                                             />
-                                            Active item
-                                        </label>
-                                        <FieldDescription>
-                                            Inactive items stay in history but disappear from day-to-day flows.
-                                        </FieldDescription>
-                                    </Field>
-                                    <Field>
-                                        <Button type="submit" className="w-full" disabled={processing}>
-                                            Create item
-                                        </Button>
-                                    </Field>
-                                </FieldGroup>
+                                        </Field>
+                                        <Field>
+                                            <FieldLabel htmlFor="sku">SKU</FieldLabel>
+                                            <Input
+                                                id="sku"
+                                                type="text"
+                                                placeholder="SKU-0001"
+                                                value={data.sku}
+                                                onChange={(event) => setData('sku', event.target.value)}
+                                                required
+                                            />
+                                            <FieldDescription>Unique identifier used in barcodes, imports, and reports.</FieldDescription>
+                                        </Field>
+                                        <Field>
+                                            <FieldLabel htmlFor="category_id">Category</FieldLabel>
+                                            <Select
+                                                value={data.category_id !== null ? String(data.category_id) : 'none'}
+                                                onValueChange={(value) => setData('category_id', value === 'none' ? null : Number(value))}
+                                            >
+                                                <SelectTrigger id="category_id" className="mt-1 w-full text-xs">
+                                                    <SelectValue placeholder="No category" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="none">No category</SelectItem>
+                                                    {categories.map((category) => (
+                                                        <SelectItem key={category.id} value={String(category.id)}>
+                                                            {category.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </Field>
+                                        <Field>
+                                            <FieldLabel htmlFor="unit_id">Base unit</FieldLabel>
+                                            <Select
+                                                value={data.unit_id !== null ? String(data.unit_id) : 'none'}
+                                                onValueChange={(value) => setData('unit_id', value === 'none' ? null : Number(value))}
+                                            >
+                                                <SelectTrigger id="unit_id" className="mt-1 w-full text-xs">
+                                                    <SelectValue placeholder="Select unit" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="none">No unit</SelectItem>
+                                                    {units.map((unit) => (
+                                                        <SelectItem key={unit.id} value={String(unit.id)}>
+                                                            {unit.name} ({unit.code})
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </Field>
+                                    </FieldGroup>
+                                </div>
+
+                                <div>
+                                    <h2 className="mb-4 text-xs font-semibold tracking-wide text-slate-500 uppercase">Stock information</h2>
+                                    <FieldGroup className="grid gap-4 md:grid-cols-2">
+                                        <Field>
+                                            <FieldLabel htmlFor="price">Cost (per base unit)</FieldLabel>
+                                            <Input
+                                                id="price"
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                placeholder="0.00"
+                                                value={data.price}
+                                                onChange={(event) => setData('price', event.target.value)}
+                                                required
+                                            />
+                                        </Field>
+                                        <Field>
+                                            <label className="mt-5 inline-flex items-center gap-2 text-xs text-slate-700">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={data.is_active}
+                                                    onChange={(event) => setData('is_active', event.target.checked)}
+                                                    className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                                                />
+                                                Active item
+                                            </label>
+                                            <FieldDescription>Inactive items stay in history but disappear from day-to-day flows.</FieldDescription>
+                                        </Field>
+                                    </FieldGroup>
+                                </div>
+
+                                <div className="mt-4 flex items-center justify-end gap-2 border-t pt-4">
+                                    <Button variant="outline" type="button" asChild>
+                                        <Link href="/inventory">Cancel</Link>
+                                    </Button>
+                                    <Button type="submit" disabled={processing}>
+                                        Save
+                                    </Button>
+                                </div>
                             </form>
                         </div>
                     </div>
@@ -201,4 +204,3 @@ export default function Create({ categories, units }: CreateProps) {
         </>
     );
 }
-

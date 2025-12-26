@@ -4,13 +4,9 @@ import { useState } from 'react';
 import { AppSidebar } from '@/components/app-sidebar';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
-import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 
 type Category = {
     id: number;
@@ -137,9 +133,11 @@ export default function Index({ products, branches }: IndexProps) {
                                                     <td className="px-3 py-2 text-right text-xs">
                                                         <div className="flex items-center justify-end gap-2">
                                                             <Button variant="outline" size="sm" asChild>
+                                                                <Link href={`/products/${product.id}/stock`}>Stock</Link>
+                                                            </Button>
+                                                            <Button variant="outline" size="sm" asChild>
                                                                 <Link href={`/products/${product.id}/edit`}>Edit</Link>
                                                             </Button>
-                                                            <AdjustStockSheet product={product} branches={branches} />
                                                             <DeleteProductAlert product={product} />
                                                         </div>
                                                     </td>
@@ -154,161 +152,6 @@ export default function Index({ products, branches }: IndexProps) {
                 </SidebarInset>
             </SidebarProvider>
         </>
-    );
-}
-
-type AdjustStockSheetProps = {
-    product: Product;
-    branches: Branch[];
-};
-
-function AdjustStockSheet({ product, branches }: AdjustStockSheetProps) {
-    type AdjustStockForm = {
-        product_id: number;
-        branch_id: string;
-        quantity: string;
-        direction: 'increase' | 'decrease';
-        reason: string;
-    };
-
-    const { data, setData, processing, reset } = useForm<AdjustStockForm>({
-        product_id: product.id,
-        branch_id: '',
-        quantity: '',
-        direction: 'increase',
-        reason: '',
-    });
-
-    const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault();
-        const quantityNumber = Number(data.quantity);
-        if (!Number.isFinite(quantityNumber) || quantityNumber <= 0) {
-            return;
-        }
-        const signedQuantity = data.direction === 'increase' ? quantityNumber : quantityNumber * -1;
-        router.post(
-            '/stock-adjustments',
-            {
-                product_id: data.product_id,
-                branch_id: data.branch_id,
-                quantity_change: signedQuantity,
-                reason: data.reason,
-            },
-            {
-                onSuccess: () => {
-                    reset();
-                },
-            },
-        );
-    };
-
-    const getBranchQuantity = (branchId: number) => {
-        const stock = product.stocks?.find((s) => s.branch_id === branchId);
-        return stock?.quantity ?? 0;
-    };
-
-    return (
-        <Sheet>
-            <SheetTrigger asChild>
-                <Button variant="outline" size="sm">
-                    Stock
-                </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="p-0">
-                <SheetHeader className="border-b border-slate-200">
-                    <SheetTitle>Stock for {product.name}</SheetTitle>
-                    <SheetDescription>View per-branch quantities and record adjustments.</SheetDescription>
-                </SheetHeader>
-                <div className="flex-1 space-y-4 overflow-y-auto p-4">
-                    <div>
-                        <h2 className="mb-2 text-xs font-semibold tracking-wide text-slate-500 uppercase">Per-branch stock</h2>
-                        <div className="rounded-lg border border-slate-200">
-                            <table className="min-w-full table-auto text-left text-xs">
-                                <thead>
-                                    <tr className="border-b border-slate-200 bg-slate-50 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
-                                        <th className="px-3 py-2">Branch</th>
-                                        <th className="px-3 py-2 text-right">Quantity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {branches.map((branch) => (
-                                        <tr key={branch.id} className="border-b border-slate-100 last:border-b-0">
-                                            <td className="px-3 py-1.5 text-[11px] text-slate-700">{branch.name}</td>
-                                            <td className="px-3 py-1.5 text-right text-[11px] text-slate-700">{getBranchQuantity(branch.id)}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div>
-                        <h2 className="mb-2 text-xs font-semibold tracking-wide text-slate-500 uppercase">Adjust stock</h2>
-                        <form onSubmit={handleSubmit} className="space-y-3">
-                            <FieldGroup>
-                                <Field>
-                                    <FieldLabel htmlFor={`adjust-branch-${product.id}`}>Branch</FieldLabel>
-                                    <Select value={data.branch_id} onValueChange={(value) => setData('branch_id', value)}>
-                                        <SelectTrigger id={`adjust-branch-${product.id}`} className="mt-1 w-full text-xs">
-                                            <SelectValue placeholder="Select branch" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {branches.map((branch) => (
-                                                <SelectItem key={branch.id} value={String(branch.id)}>
-                                                    {branch.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                </Field>
-                                <Field>
-                                    <FieldLabel>Change</FieldLabel>
-                                    <div className="flex gap-2">
-                                        <Select
-                                            value={data.direction}
-                                            onValueChange={(value) => setData('direction', value as AdjustStockForm['direction'])}
-                                        >
-                                            <SelectTrigger className="mt-1 w-28 text-xs">
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="increase">Increase</SelectItem>
-                                                <SelectItem value="decrease">Decrease</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                        <Input
-                                            type="number"
-                                            min="0"
-                                            step="0.001"
-                                            placeholder="0"
-                                            value={data.quantity}
-                                            onChange={(event) => setData('quantity', event.target.value)}
-                                            className="mt-1 text-xs"
-                                        />
-                                    </div>
-                                    <FieldDescription>Use positive quantities. Decrease will subtract stock.</FieldDescription>
-                                </Field>
-                                <Field>
-                                    <FieldLabel htmlFor={`adjust-reason-${product.id}`}>Reason</FieldLabel>
-                                    <Input
-                                        id={`adjust-reason-${product.id}`}
-                                        type="text"
-                                        placeholder="Received delivery, correction, etc."
-                                        value={data.reason}
-                                        onChange={(event) => setData('reason', event.target.value)}
-                                        className="text-xs"
-                                    />
-                                </Field>
-                                <Field>
-                                    <Button type="submit" className="w-full" disabled={processing || !data.branch_id || !data.quantity}>
-                                        Record adjustment
-                                    </Button>
-                                </Field>
-                            </FieldGroup>
-                        </form>
-                    </div>
-                </div>
-            </SheetContent>
-        </Sheet>
     );
 }
 

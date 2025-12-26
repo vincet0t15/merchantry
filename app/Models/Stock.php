@@ -12,7 +12,9 @@ class Stock extends Model
     protected $fillable = [
         'product_id',
         'branch_id',
+        'initial_quantity',
         'quantity',
+        'reorder_level',
     ];
 
     public function product()
@@ -25,4 +27,3 @@ class Stock extends Model
         return $this->belongsTo(Branch::class);
     }
 }
-
