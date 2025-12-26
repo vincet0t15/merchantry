@@ -60,6 +60,11 @@ const data = {
             ],
         },
         {
+            title: 'Inventory',
+            url: '/inventory-items',
+            icon: Store,
+        },
+        {
             title: 'Stores',
             url: '#',
             icon: Store,

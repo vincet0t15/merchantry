@@ -133,7 +133,11 @@ export default function StockPage({ product, stocks, branches, adjustments }: St
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator className="hidden md:block" />
                                     <BreadcrumbItem className="hidden md:block">
-                                        <BreadcrumbLink href="/inventory">Inventory</BreadcrumbLink>
+                                        <BreadcrumbLink href="/inventory">Catalog</BreadcrumbLink>
+                                    </BreadcrumbItem>
+                                    <BreadcrumbSeparator className="hidden md:block" />
+                                    <BreadcrumbItem className="hidden md:block">
+                                        <BreadcrumbLink href="/inventory">Products/Services</BreadcrumbLink>
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator className="hidden md:block" />
                                     <BreadcrumbItem>
@@ -143,7 +147,7 @@ export default function StockPage({ product, stocks, branches, adjustments }: St
                             </Breadcrumb>
                         </div>
                         <Button variant="outline" size="sm" asChild>
-                            <Link href="/inventory">Back to inventory</Link>
+                            <Link href="/inventory">Back to products</Link>
                         </Button>
                     </header>
                     <div className="flex flex-1 flex-col gap-4 p-4 pt-4">

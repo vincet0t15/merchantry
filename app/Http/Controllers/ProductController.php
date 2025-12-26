@@ -30,6 +30,25 @@ class ProductController extends Controller
         ]);
     }
 
+    public function inventoryItems()
+    {
+        $products = Product::with(['category', 'unit', 'stocks.branch'])
+            ->whereHas('stocks')
+            ->orderBy('name')
+            ->get(['id', 'name', 'sku', 'type', 'category_id', 'unit_id', 'price', 'is_active']);
+
+        $categories = Category::orderBy('name')->get(['id', 'name']);
+        $units = Unit::orderBy('name')->get(['id', 'name', 'code']);
+        $branches = Branch::orderBy('name')->get(['id', 'name']);
+
+        return Inertia::render('Inventory/Items', [
+            'products' => $products,
+            'categories' => $categories,
+            'units' => $units,
+            'branches' => $branches,
+        ]);
+    }
+
     public function create()
     {
         $categories = Category::orderBy('name')->get(['id', 'name']);
