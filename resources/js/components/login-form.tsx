@@ -9,7 +9,7 @@ import { Link, useForm } from '@inertiajs/react';
 import { toast } from 'sonner';
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, reset } = useForm({
         username: '',
         password: '',
     });
