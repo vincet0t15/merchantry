@@ -19,12 +19,18 @@ type Unit = {
     code: string;
 };
 
+type Branch = {
+    id: number;
+    name: string;
+};
+
 type CreateProps = {
     categories: Category[];
     units: Unit[];
+    branches: Branch[];
 };
 
-export default function Create({ categories, units }: CreateProps) {
+export default function Create({ categories, units, branches }: CreateProps) {
     type CreateProductForm = {
         name: string;
         sku: string;
@@ -32,6 +38,11 @@ export default function Create({ categories, units }: CreateProps) {
         unit_id: number | null;
         price: string;
         is_active: boolean;
+        stocks: {
+            branch_id: number;
+            initial_quantity: string;
+            reorder_level: string;
+        }[];
     };
 
     const { data, setData, post, processing, reset } = useForm<CreateProductForm>({
@@ -41,7 +52,25 @@ export default function Create({ categories, units }: CreateProps) {
         unit_id: null,
         price: '',
         is_active: true,
+        stocks: branches.map((branch) => ({
+            branch_id: branch.id,
+            initial_quantity: '',
+            reorder_level: '',
+        })),
     });
+
+    const generateSku = () => {
+        const base =
+            data.name
+                .trim()
+                .toUpperCase()
+                .replace(/[^A-Z0-9]+/g, '-')
+                .replace(/^-+|-+$/g, '') || 'ITEM';
+        const random = Math.floor(Math.random() * 10000)
+            .toString()
+            .padStart(4, '0');
+        setData('sku', `${base}-${random}`);
+    };
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
@@ -106,14 +135,20 @@ export default function Create({ categories, units }: CreateProps) {
                                         </Field>
                                         <Field>
                                             <FieldLabel htmlFor="sku">SKU</FieldLabel>
-                                            <Input
-                                                id="sku"
-                                                type="text"
-                                                placeholder="SKU-0001"
-                                                value={data.sku}
-                                                onChange={(event) => setData('sku', event.target.value)}
-                                                required
-                                            />
+                                            <div className="flex gap-2">
+                                                <Input
+                                                    id="sku"
+                                                    type="text"
+                                                    placeholder="SKU-0001"
+                                                    value={data.sku}
+                                                    onChange={(event) => setData('sku', event.target.value)}
+                                                    required
+                                                    className="flex-1"
+                                                />
+                                                <Button type="button" variant="outline" size="sm" onClick={generateSku}>
+                                                    Suggest
+                                                </Button>
+                                            </div>
                                             <FieldDescription>Unique identifier used in barcodes, imports, and reports.</FieldDescription>
                                         </Field>
                                         <Field>
@@ -186,6 +221,77 @@ export default function Create({ categories, units }: CreateProps) {
                                             <FieldDescription>Inactive items stay in history but disappear from day-to-day flows.</FieldDescription>
                                         </Field>
                                     </FieldGroup>
+
+                                    <div className="mt-6 rounded-lg border border-slate-200">
+                                        <div className="border-b border-slate-200 bg-slate-50 px-3 py-2 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
+                                            Initial stock per branch
+                                        </div>
+                                        <table className="min-w-full table-auto text-left text-xs">
+                                            <thead>
+                                                <tr className="border-b border-slate-200 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
+                                                    <th className="px-3 py-2">Branch</th>
+                                                    <th className="px-3 py-2 text-right">Initial stock</th>
+                                                    <th className="px-3 py-2 text-right">Reorder level</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {branches.map((branch, index) => {
+                                                    const stock = data.stocks[index];
+                                                    return (
+                                                        <tr key={branch.id} className="border-b border-slate-100 last:border-b-0">
+                                                            <td className="px-3 py-1.5 text-[11px] text-slate-700">{branch.name}</td>
+                                                            <td className="px-3 py-1.5 text-right text-[11px] text-slate-700">
+                                                                <Input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    step="0.001"
+                                                                    value={stock?.initial_quantity ?? ''}
+                                                                    onChange={(event) => {
+                                                                        const value = event.target.value;
+                                                                        setData(
+                                                                            'stocks',
+                                                                            data.stocks.map((item, i) =>
+                                                                                i === index
+                                                                                    ? {
+                                                                                          ...item,
+                                                                                          initial_quantity: value,
+                                                                                      }
+                                                                                    : item,
+                                                                            ),
+                                                                        );
+                                                                    }}
+                                                                    className="h-7 w-24 text-right text-[11px]"
+                                                                />
+                                                            </td>
+                                                            <td className="px-3 py-1.5 text-right text-[11px] text-slate-700">
+                                                                <Input
+                                                                    type="number"
+                                                                    min="0"
+                                                                    step="0.001"
+                                                                    value={stock?.reorder_level ?? ''}
+                                                                    onChange={(event) => {
+                                                                        const value = event.target.value;
+                                                                        setData(
+                                                                            'stocks',
+                                                                            data.stocks.map((item, i) =>
+                                                                                i === index
+                                                                                    ? {
+                                                                                          ...item,
+                                                                                          reorder_level: value,
+                                                                                      }
+                                                                                    : item,
+                                                                            ),
+                                                                        );
+                                                                    }}
+                                                                    className="h-7 w-24 text-right text-[11px]"
+                                                                />
+                                                            </td>
+                                                        </tr>
+                                                    );
+                                                })}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
 
                                 <div className="mt-4 flex items-center justify-end gap-2 border-t pt-4">

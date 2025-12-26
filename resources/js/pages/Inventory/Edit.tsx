@@ -19,6 +19,19 @@ type Unit = {
     code: string;
 };
 
+type Branch = {
+    id: number;
+    name: string;
+};
+
+type StockRow = {
+    id: number;
+    branch_id: number;
+    initial_quantity: number;
+    quantity: number;
+    reorder_level: number;
+};
+
 type Product = {
     id: number;
     name: string;
@@ -27,15 +40,17 @@ type Product = {
     unit_id: number | null;
     price: number;
     is_active: boolean;
+    stocks?: StockRow[];
 };
 
 type EditProps = {
     product: Product;
     categories: Category[];
     units: Unit[];
+    branches: Branch[];
 };
 
-export default function Edit({ product, categories, units }: EditProps) {
+export default function Edit({ product, categories, units, branches }: EditProps) {
     type EditProductForm = {
         name: string;
         sku: string;
@@ -43,7 +58,19 @@ export default function Edit({ product, categories, units }: EditProps) {
         unit_id: number | null;
         price: string;
         is_active: boolean;
+        stocks: {
+            branch_id: number;
+            reorder_level: string;
+        }[];
     };
+
+    const initialStocks = branches.map((branch) => {
+        const existing = product.stocks?.find((stock) => stock.branch_id === branch.id);
+        return {
+            branch_id: branch.id,
+            reorder_level: existing ? String(existing.reorder_level ?? 0) : '',
+        };
+    });
 
     const { data, setData, put, processing } = useForm<EditProductForm>({
         name: product.name,
@@ -52,6 +79,7 @@ export default function Edit({ product, categories, units }: EditProps) {
         unit_id: product.unit_id,
         price: String(product.price),
         is_active: product.is_active,
+        stocks: initialStocks,
     });
 
     const handleSubmit = (event: React.FormEvent) => {
@@ -93,9 +121,7 @@ export default function Edit({ product, categories, units }: EditProps) {
                         <div className="mx-auto w-full max-w-xl rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                             <div className="mb-4">
                                 <h1 className="text-base font-semibold tracking-tight">Edit inventory item</h1>
-                                <p className="text-xs text-slate-600">
-                                    Update how this item appears in POS and reports.
-                                </p>
+                                <p className="text-xs text-slate-600">Update how this item appears in POS and reports.</p>
                             </div>
                             <form onSubmit={handleSubmit} className="space-y-4">
                                 <FieldGroup>
@@ -111,24 +137,23 @@ export default function Edit({ product, categories, units }: EditProps) {
                                     </Field>
                                     <Field>
                                         <FieldLabel htmlFor="sku">SKU / Code</FieldLabel>
-                                        <Input
-                                            id="sku"
-                                            type="text"
-                                            value={data.sku}
-                                            onChange={(event) => setData('sku', event.target.value)}
-                                            required
-                                        />
-                                        <FieldDescription>
-                                            Unique identifier used in barcodes, imports, and reports.
-                                        </FieldDescription>
+                                        <div className="flex gap-2">
+                                            <Input
+                                                id="sku"
+                                                type="text"
+                                                value={data.sku}
+                                                onChange={(event) => setData('sku', event.target.value)}
+                                                required
+                                                className="flex-1"
+                                            />
+                                        </div>
+                                        <FieldDescription>Unique identifier used in barcodes, imports, and reports.</FieldDescription>
                                     </Field>
                                     <Field>
                                         <FieldLabel htmlFor="category_id">Category</FieldLabel>
                                         <Select
                                             value={data.category_id !== null ? String(data.category_id) : 'none'}
-                                            onValueChange={(value) =>
-                                                setData('category_id', value === 'none' ? null : Number(value))
-                                            }
+                                            onValueChange={(value) => setData('category_id', value === 'none' ? null : Number(value))}
                                         >
                                             <SelectTrigger id="category_id" className="mt-1 w-full text-xs">
                                                 <SelectValue placeholder="No category" />
@@ -184,9 +209,64 @@ export default function Edit({ product, categories, units }: EditProps) {
                                             />
                                             Active item
                                         </label>
-                                        <FieldDescription>
-                                            Inactive items stay in history but disappear from day-to-day flows.
-                                        </FieldDescription>
+                                        <FieldDescription>Inactive items stay in history but disappear from day-to-day flows.</FieldDescription>
+                                    </Field>
+                                    <Field>
+                                        <div className="rounded-lg border border-slate-200">
+                                            <div className="border-b border-slate-200 bg-slate-50 px-3 py-2 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
+                                                Stock per branch
+                                            </div>
+                                            <table className="min-w-full table-auto text-left text-xs">
+                                                <thead>
+                                                    <tr className="border-b border-slate-200 text-[11px] font-semibold tracking-wide text-slate-500 uppercase">
+                                                        <th className="px-3 py-2">Branch</th>
+                                                        <th className="px-3 py-2 text-right">Initial stock</th>
+                                                        <th className="px-3 py-2 text-right">Current stock</th>
+                                                        <th className="px-3 py-2 text-right">Reorder level</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {branches.map((branch, index) => {
+                                                        const stock = product.stocks?.find((item) => item.branch_id === branch.id);
+                                                        const formStock = data.stocks[index];
+                                                        return (
+                                                            <tr key={branch.id} className="border-b border-slate-100 last:border-b-0">
+                                                                <td className="px-3 py-1.5 text-[11px] text-slate-700">{branch.name}</td>
+                                                                <td className="px-3 py-1.5 text-right text-[11px] text-slate-700">
+                                                                    {stock?.initial_quantity ?? 0}
+                                                                </td>
+                                                                <td className="px-3 py-1.5 text-right text-[11px] text-slate-700">
+                                                                    {stock?.quantity ?? 0}
+                                                                </td>
+                                                                <td className="px-3 py-1.5 text-right text-[11px] text-slate-700">
+                                                                    <Input
+                                                                        type="number"
+                                                                        min="0"
+                                                                        step="0.001"
+                                                                        value={formStock?.reorder_level ?? ''}
+                                                                        onChange={(event) => {
+                                                                            const value = event.target.value;
+                                                                            setData(
+                                                                                'stocks',
+                                                                                data.stocks.map((item, i) =>
+                                                                                    i === index
+                                                                                        ? {
+                                                                                              ...item,
+                                                                                              reorder_level: value,
+                                                                                          }
+                                                                                        : item,
+                                                                                ),
+                                                                            );
+                                                                        }}
+                                                                        className="h-7 w-24 text-right text-[11px]"
+                                                                    />
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    })}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </Field>
                                     <Field>
                                         <Button type="submit" className="w-full" disabled={processing}>
@@ -202,4 +282,3 @@ export default function Edit({ product, categories, units }: EditProps) {
         </>
     );
 }
-
