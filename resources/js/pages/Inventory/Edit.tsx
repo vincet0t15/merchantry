@@ -107,11 +107,11 @@ export default function Edit({ product, categories, units, branches }: EditProps
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator className="hidden md:block" />
                                     <BreadcrumbItem className="hidden md:block">
-                                        <BreadcrumbLink href="/inventory">Inventory</BreadcrumbLink>
+                                        <BreadcrumbLink href="/inventory">Catalog</BreadcrumbLink>
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator className="hidden md:block" />
                                     <BreadcrumbItem>
-                                        <BreadcrumbPage>Edit item</BreadcrumbPage>
+                                        <BreadcrumbPage>Edit product</BreadcrumbPage>
                                     </BreadcrumbItem>
                                 </BreadcrumbList>
                             </Breadcrumb>
@@ -123,15 +123,15 @@ export default function Edit({ product, categories, units, branches }: EditProps
                     <div className="flex flex-1 flex-col gap-4 p-4 pt-4">
                         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
                             <div className="mb-6">
-                                <h1 className="text-base font-semibold tracking-tight">Edit inventory item</h1>
-                                <p className="text-xs text-slate-600">Update how this item appears in POS and reports.</p>
+                                <h1 className="text-base font-semibold tracking-tight">Edit product or service</h1>
+                                <p className="text-xs text-slate-600">Update how this product or service appears in POS and reports.</p>
                             </div>
                             <form onSubmit={handleSubmit} className="space-y-8">
                                 <div>
                                     <h2 className="mb-4 text-xs font-semibold tracking-wide text-slate-500 uppercase">Details</h2>
                                     <FieldGroup className="grid gap-4 md:grid-cols-2">
                                         <Field>
-                                            <FieldLabel htmlFor="name">Item name</FieldLabel>
+                                            <FieldLabel htmlFor="name">Product name</FieldLabel>
                                             <Input
                                                 id="name"
                                                 type="text"

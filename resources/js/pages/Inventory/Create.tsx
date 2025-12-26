@@ -100,11 +100,15 @@ export default function Create({ categories, units, branches }: CreateProps) {
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator className="hidden md:block" />
                                     <BreadcrumbItem>
-                                        <BreadcrumbLink href="/inventory">Inventory</BreadcrumbLink>
+                                        <BreadcrumbLink href="/inventory">Catalog</BreadcrumbLink>
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator />
                                     <BreadcrumbItem>
-                                        <BreadcrumbPage>New item</BreadcrumbPage>
+                                        <BreadcrumbLink href="/inventory">Products/Services</BreadcrumbLink>
+                                    </BreadcrumbItem>
+                                    <BreadcrumbSeparator />
+                                    <BreadcrumbItem>
+                                        <BreadcrumbPage>New product</BreadcrumbPage>
                                     </BreadcrumbItem>
                                 </BreadcrumbList>
                             </Breadcrumb>
@@ -116,8 +120,8 @@ export default function Create({ categories, units, branches }: CreateProps) {
                     <div className="flex flex-1 flex-col gap-4 p-4 pt-4">
                         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
                             <div className="mb-6">
-                                <h1 className="text-base font-semibold tracking-tight">New inventory item</h1>
-                                <p className="text-xs text-slate-600">Add a product you sell so you can track it in POS.</p>
+                                <h1 className="text-base font-semibold tracking-tight">New product or service</h1>
+                                <p className="text-xs text-slate-600">Add a product or service you sell so you can track it in POS.</p>
                             </div>
                             <form onSubmit={handleSubmit} className="space-y-8">
                                 <div>

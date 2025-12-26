@@ -63,7 +63,7 @@ const formatPrice = (price: number | string): string => {
 export default function Index({ products, branches }: IndexProps) {
     return (
         <>
-            <Head title="Inventory" />
+            <Head title="Products/Services" />
             <SidebarProvider>
                 <AppSidebar />
                 <SidebarInset>
@@ -77,30 +77,28 @@ export default function Index({ products, branches }: IndexProps) {
                                         <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator className="hidden md:block" />
-                                    <BreadcrumbItem>
-                                        <BreadcrumbPage>Inventory</BreadcrumbPage>
+                                    <BreadcrumbItem className="hidden md:block">
+                                        <BreadcrumbPage>Catalog</BreadcrumbPage>
                                     </BreadcrumbItem>
                                 </BreadcrumbList>
                             </Breadcrumb>
                         </div>
                         <Button asChild>
-                            <Link href="/inventory/create">New item</Link>
+                            <Link href="/inventory/create">New product</Link>
                         </Button>
                     </header>
                     <div className="flex flex-1 flex-col gap-4 p-4 pt-4">
                         <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
                             <div className="mb-4 flex items-center justify-between gap-2">
                                 <div>
-                                    <h1 className="text-base font-semibold tracking-tight">Inventory</h1>
-                                    <p className="text-xs text-slate-600">Manage the products you sell so cashiers can find them quickly.</p>
+                                    <h1 className="text-base font-semibold tracking-tight">Products and services</h1>
+                                    <p className="text-xs text-slate-600">Manage your catalog so cashiers can find items quickly.</p>
                                 </div>
                             </div>
                             {products.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center">
-                                    <p className="text-sm font-medium text-slate-700">No items yet</p>
-                                    <p className="max-w-sm text-xs text-slate-600">
-                                        Add your first inventory item to start recording sales and stock.
-                                    </p>
+                                    <p className="text-sm font-medium text-slate-700">No products yet</p>
+                                    <p className="max-w-sm text-xs text-slate-600">Add your first product or service to start recording sales.</p>
                                 </div>
                             ) : (
                                 <div className="overflow-x-auto">

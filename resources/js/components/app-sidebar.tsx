@@ -45,9 +45,19 @@ const data = {
             icon: Settings2,
         },
         {
-            title: 'Inventory',
+            title: 'Catalog',
             url: '/inventory',
             icon: Store,
+            items: [
+                {
+                    title: 'Products/Services',
+                    url: '/inventory',
+                },
+                {
+                    title: 'New product',
+                    url: '/inventory/create',
+                },
+            ],
         },
         {
             title: 'Stores',
