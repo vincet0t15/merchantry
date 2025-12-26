@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'active' => \App\Http\Middleware\EnsureUserIsActive::class,
             'can-manage-branches' => \App\Http\Middleware\EnsureUserCanManageBranches::class,
+            'can-manage-users' => \App\Http\Middleware\EnsureUserCanManageUsers::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

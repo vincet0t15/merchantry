@@ -15,5 +15,9 @@ class Branch extends Model
         'location',
         'is_active',
     ];
-}
 
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
+}

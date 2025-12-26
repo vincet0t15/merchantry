@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'is_active',
         'role',
+        'branch_id',
     ];
 
     /**
@@ -46,5 +47,10 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
         ];
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class);
     }
 }

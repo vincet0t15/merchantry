@@ -8,9 +8,15 @@ use Inertia\Inertia;
 
 class BranchController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $branches = Branch::orderBy('name')->get();
+        $user = $request->user();
+
+        if ($user && $user->role === 'branch_manager' && $user->branch_id) {
+            $branches = Branch::where('id', $user->branch_id)->orderBy('name')->get();
+        } else {
+            $branches = Branch::orderBy('name')->get();
+        }
 
         return Inertia::render('Branches/Index', [
             'branches' => $branches,
@@ -68,4 +74,3 @@ class BranchController extends Controller
         return redirect()->route('branches.index')->with('success', 'Branch deleted successfully.');
     }
 }
-

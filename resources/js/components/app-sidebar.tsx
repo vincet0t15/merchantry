@@ -8,7 +8,6 @@ import { NavProjects } from '@/components/nav-projects';
 import { NavUser } from '@/components/nav-user';
 import { TeamSwitcher } from '@/components/team-switcher';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar';
-import branches from '@/routes/branches';
 
 // This is sample data.
 const data = {
@@ -86,8 +85,8 @@ const data = {
             icon: Settings2,
             items: [
                 {
-                    title: 'Branches',
-                    url: branches.index.url(),
+                    title: 'Users',
+                    url: '/users',
                 },
             ],
         },

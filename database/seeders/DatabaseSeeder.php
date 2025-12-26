@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Branch;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -14,6 +15,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $mainBranch = Branch::create([
+            'name' => 'Main Branch',
+            'code' => 'MAIN-01',
+            'location' => 'HQ',
+            'is_active' => true,
+        ]);
+
         User::create([
             'name' => 'Super Admin',
             'username' => 'super_admin',
@@ -28,6 +36,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             'is_active' => true,
             'role' => 'branch_manager',
+            'branch_id' => $mainBranch->id,
         ]);
 
         User::create([
@@ -36,6 +45,7 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
             'is_active' => true,
             'role' => 'cashier',
+            'branch_id' => $mainBranch->id,
         ]);
     }
 }

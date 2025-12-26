@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -28,6 +29,10 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::resource('branches', BranchController::class)
         ->except(['show'])
         ->middleware('can-manage-branches');
+
+    Route::resource('users', UserController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->middleware('can-manage-users');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });
