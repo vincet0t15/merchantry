@@ -30,7 +30,7 @@ type Product = {
     sku: string;
     category_id: number | null;
     unit_id: number | null;
-    price: number;
+    price: number | string;
     is_active: boolean;
     category?: Category | null;
     unit?: Unit | null;
@@ -47,6 +47,16 @@ type IndexProps = {
     categories: Category[];
     units: Unit[];
     branches: Branch[];
+};
+
+const formatPrice = (price: number | string): string => {
+    const numeric = typeof price === 'number' ? price : typeof price === 'string' ? parseFloat(price) : NaN;
+
+    if (!Number.isFinite(numeric)) {
+        return String(price);
+    }
+
+    return numeric.toFixed(2);
 };
 
 export default function Index({ products, branches }: IndexProps) {
@@ -115,7 +125,7 @@ export default function Index({ products, branches }: IndexProps) {
                                                     <td className="px-3 py-2 text-xs text-slate-600">
                                                         {product.unit ? `${product.unit.name} (${product.unit.code})` : '—'}
                                                     </td>
-                                                    <td className="px-3 py-2 text-right text-xs text-slate-700">₱ {product.price.toFixed(2)}</td>
+                                                    <td className="px-3 py-2 text-right text-xs text-slate-700">₱ {formatPrice(product.price)}</td>
                                                     <td className="px-3 py-2 text-right text-xs text-slate-700">
                                                         {product.stocks?.reduce((total, stock) => total + stock.quantity, 0) ?? 0}
                                                     </td>
