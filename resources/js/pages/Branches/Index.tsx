@@ -1,3 +1,6 @@
+import * as AlertDialog from '@radix-ui/react-dialog';
+import { useState } from 'react';
+
 import { AppSidebar } from '@/components/app-sidebar';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
@@ -6,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 
 type Branch = {
     id: number;
@@ -54,14 +57,6 @@ export default function Index({ branches }: IndexProps) {
     });
 
     const suggestedCode = suggestBranchCode(data.name);
-
-    const handleDelete = (branch: Branch) => {
-        if (!confirm(`Delete branch "${branch.name}"?`)) {
-            return;
-        }
-
-        router.delete(`/branches/${branch.id}`);
-    };
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
@@ -286,53 +281,45 @@ export default function Index({ branches }: IndexProps) {
                                 </div>
                             ) : (
                                 <div className="overflow-x-auto">
-                                    <table className="min-w-full table-auto text-left text-sm">
-                                        <thead>
-                                            <tr className="border-b border-slate-200 bg-slate-50 text-xs font-semibold tracking-wide text-slate-500 uppercase">
-                                                <th className="px-3 py-2">Name</th>
-                                                <th className="px-3 py-2">Code</th>
-                                                <th className="px-3 py-2">Location</th>
-                                                <th className="px-3 py-2">Status</th>
-                                                <th className="px-3 py-2 text-right">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {branches.map((branch) => (
-                                                <tr key={branch.id} className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/60">
-                                                    <td className="px-3 py-2 text-sm font-medium text-slate-900">{branch.name}</td>
-                                                    <td className="px-3 py-2 text-xs text-slate-600">{branch.code}</td>
-                                                    <td className="px-3 py-2 text-xs text-slate-600">{branch.location || '—'}</td>
-                                                    <td className="px-3 py-2 text-xs">
-                                                        {branch.is_active ? (
-                                                            <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 ring-1 ring-emerald-100">
-                                                                Active
-                                                            </span>
-                                                        ) : (
-                                                            <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600 ring-1 ring-slate-200">
-                                                                Inactive
-                                                            </span>
-                                                        )}
-                                                    </td>
-                                                    <td className="px-3 py-2 text-right text-xs">
-                                                        <div className="flex items-center justify-end gap-2">
-                                                            <Button variant="outline" size="sm" asChild>
-                                                                <Link href={`/branches/${branch.id}/edit`}>Edit</Link>
-                                                            </Button>
-                                                            <Button
-                                                                variant="outline"
-                                                                size="sm"
-                                                                className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
-                                                                type="button"
-                                                                onClick={() => handleDelete(branch)}
-                                                            >
-                                                                Delete
-                                                            </Button>
-                                                        </div>
-                                                    </td>
+                                    <div className="rounded-md border border-slate-200">
+                                        <table className="min-w-full table-auto text-left text-sm">
+                                            <thead>
+                                                <tr className="border-b border-slate-200 bg-slate-50 text-xs font-semibold tracking-wide text-slate-500 uppercase">
+                                                    <th className="px-3 py-2">Name</th>
+                                                    <th className="px-3 py-2">Code</th>
+                                                    <th className="px-3 py-2">Location</th>
+                                                    <th className="px-3 py-2">Status</th>
+                                                    <th className="px-3 py-2 text-right">Actions</th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                {branches.map((branch) => (
+                                                    <tr key={branch.id} className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/60">
+                                                        <td className="px-3 py-2 text-sm font-medium text-slate-900">{branch.name}</td>
+                                                        <td className="px-3 py-2 text-xs text-slate-600">{branch.code}</td>
+                                                        <td className="px-3 py-2 text-xs text-slate-600">{branch.location || '—'}</td>
+                                                        <td className="px-3 py-2 text-xs">
+                                                            {branch.is_active ? (
+                                                                <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-700 ring-1 ring-emerald-100">
+                                                                    Active
+                                                                </span>
+                                                            ) : (
+                                                                <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-600 ring-1 ring-slate-200">
+                                                                    Inactive
+                                                                </span>
+                                                            )}
+                                                        </td>
+                                                        <td className="px-3 py-2 text-right text-xs">
+                                                            <div className="flex items-center justify-end gap-2">
+                                                                <EditBranchSheet branch={branch} />
+                                                                <DeleteBranchAlert branch={branch} />
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -340,5 +327,149 @@ export default function Index({ branches }: IndexProps) {
                 </SidebarInset>
             </SidebarProvider>
         </>
+    );
+}
+
+type EditBranchSheetProps = {
+    branch: Branch;
+};
+
+function EditBranchSheet({ branch }: EditBranchSheetProps) {
+    type EditBranchForm = {
+        name: string;
+        code: string;
+        location: string;
+        is_active: boolean;
+    };
+
+    const { data, setData, put, processing, reset } = useForm<EditBranchForm>({
+        name: branch.name,
+        code: branch.code,
+        location: branch.location ?? '',
+        is_active: branch.is_active,
+    });
+
+    const handleSubmit = (event: React.FormEvent) => {
+        event.preventDefault();
+        put(`/branches/${branch.id}`, {
+            onSuccess: () => {
+                reset();
+            },
+        });
+    };
+
+    return (
+        <Sheet>
+            <SheetTrigger asChild>
+                <Button variant="outline" size="sm">
+                    Edit
+                </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="p-0">
+                <SheetHeader className="border-b border-slate-200">
+                    <SheetTitle>Edit branch</SheetTitle>
+                    <SheetDescription>Update how this branch appears in reports and POS flows.</SheetDescription>
+                </SheetHeader>
+                <div className="flex-1 overflow-y-auto p-4">
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <FieldGroup>
+                            <Field>
+                                <FieldLabel htmlFor={`edit-name-${branch.id}`}>Branch name</FieldLabel>
+                                <Input
+                                    id={`edit-name-${branch.id}`}
+                                    type="text"
+                                    value={data.name}
+                                    onChange={(event) => setData('name', event.target.value)}
+                                    required
+                                />
+                            </Field>
+                            <Field>
+                                <FieldLabel htmlFor={`edit-code-${branch.id}`}>Branch code</FieldLabel>
+                                <Input
+                                    id={`edit-code-${branch.id}`}
+                                    type="text"
+                                    value={data.code}
+                                    onChange={(event) => setData('code', event.target.value)}
+                                    required
+                                />
+                                <FieldDescription>Short identifier used in reports and stock locations.</FieldDescription>
+                            </Field>
+                            <Field>
+                                <FieldLabel htmlFor={`edit-location-${branch.id}`}>Location</FieldLabel>
+                                <Input
+                                    id={`edit-location-${branch.id}`}
+                                    type="text"
+                                    value={data.location}
+                                    onChange={(event) => setData('location', event.target.value)}
+                                />
+                                <FieldDescription>Optional description so your team can recognize this branch quickly.</FieldDescription>
+                            </Field>
+                            <Field>
+                                <label className="inline-flex items-center gap-2 text-xs text-slate-700">
+                                    <input
+                                        type="checkbox"
+                                        checked={data.is_active}
+                                        onChange={(event) => setData('is_active', event.target.checked)}
+                                        className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                                    />
+                                    Active branch
+                                </label>
+                                <FieldDescription>Inactive branches stay in your history but disappear from day-to-day flows.</FieldDescription>
+                            </Field>
+                            <Field>
+                                <Button type="submit" className="w-full" disabled={processing}>
+                                    Save changes
+                                </Button>
+                            </Field>
+                        </FieldGroup>
+                    </form>
+                </div>
+            </SheetContent>
+        </Sheet>
+    );
+}
+
+type DeleteBranchAlertProps = {
+    branch: Branch;
+};
+
+function DeleteBranchAlert({ branch }: DeleteBranchAlertProps) {
+    const [open, setOpen] = useState(false);
+
+    const handleDelete = () => {
+        router.delete(`/branches/${branch.id}`, {
+            onSuccess: () => {
+                setOpen(false);
+            },
+        });
+    };
+
+    return (
+        <AlertDialog.Root open={open} onOpenChange={setOpen}>
+            <AlertDialog.Trigger asChild>
+                <Button variant="outline" size="sm" className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700" type="button">
+                    Delete
+                </Button>
+            </AlertDialog.Trigger>
+            <AlertDialog.Portal>
+                <AlertDialog.Overlay className="fixed inset-0 z-50 bg-black/50" />
+                <AlertDialog.Content className="fixed top-1/2 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-4 shadow-lg">
+                    <div className="space-y-2">
+                        <AlertDialog.Title className="text-sm font-semibold text-slate-900">Delete branch</AlertDialog.Title>
+                        <AlertDialog.Description className="text-xs text-slate-600">
+                            Are you sure you want to delete &quot;{branch.name}&quot;? This cannot be undone.
+                        </AlertDialog.Description>
+                    </div>
+                    <div className="mt-4 flex justify-end gap-2">
+                        <Button variant="outline" size="sm" type="button" onClick={() => setOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button size="sm" className="bg-red-600 text-white hover:bg-red-700" type="button" onClick={handleDelete}>
+                            Delete
+                        </Button>
+                    </div>
+                </AlertDialog.Content>
+            </AlertDialog.Portal>
+        </AlertDialog.Root>
     );
 }
