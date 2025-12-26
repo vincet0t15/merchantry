@@ -47,9 +47,8 @@ const data = {
 
         {
             title: 'Products',
-            url: '/inventory',
+            url: '/products',
             icon: Store,
-          
         },
         {
             title: 'Inventory',

@@ -51,8 +51,8 @@ Route::middleware(['auth', 'active'])->group(function () {
         ->only(['index', 'store', 'update', 'destroy'])
         ->middleware('can-manage-users');
 
-    Route::get('inventory', [ProductController::class, 'index'])
-        ->name('inventory.index')
+    Route::get('products', [ProductController::class, 'index'])
+        ->name('products.index')
         ->middleware('can-manage-catalog');
 
     Route::get('inventory-items', [ProductController::class, 'inventoryItems'])

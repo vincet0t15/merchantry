@@ -23,7 +23,7 @@ class ProductController extends Controller
         $units = Unit::orderBy('name')->get(['id', 'name', 'code']);
         $branches = Branch::orderBy('name')->get(['id', 'name']);
 
-        return Inertia::render('Inventory/Index', [
+        return Inertia::render('Products/Index', [
             'products' => $products,
             'categories' => $categories,
             'units' => $units,
@@ -168,7 +168,7 @@ class ProductController extends Controller
             ]);
         }
 
-        return redirect()->route('inventory.index')->with('success', 'Product created successfully.');
+        return redirect()->route('products.index')->with('success', 'Product created successfully.');
     }
 
     public function update(Request $request, Product $product)
@@ -229,13 +229,13 @@ class ProductController extends Controller
             $stock->save();
         }
 
-        return redirect()->route('inventory.index')->with('success', 'Product updated successfully.');
+        return redirect()->route('products.index')->with('success', 'Product updated successfully.');
     }
 
     public function destroy(Product $product)
     {
         $product->delete();
 
-        return redirect()->route('inventory.index')->with('success', 'Product deleted successfully.');
+        return redirect()->route('products.index')->with('success', 'Product deleted successfully.');
     }
 }

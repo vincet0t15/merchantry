@@ -120,7 +120,7 @@ export default function CreateProductOnly({ categories, units, branches }: Creat
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator className="hidden md:block" />
                                     <BreadcrumbItem>
-                                        <BreadcrumbLink href="/inventory">Catalog</BreadcrumbLink>
+                                        <BreadcrumbLink href="/products">Products</BreadcrumbLink>
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator />
                                     <BreadcrumbItem>
@@ -130,7 +130,7 @@ export default function CreateProductOnly({ categories, units, branches }: Creat
                             </Breadcrumb>
                         </div>
                         <Button variant="outline" size="sm" asChild>
-                            <Link href="/inventory">Cancel</Link>
+                            <Link href="/products">Cancel</Link>
                         </Button>
                     </header>
                     <div className="flex flex-1 flex-col gap-4 p-4 pt-4">
