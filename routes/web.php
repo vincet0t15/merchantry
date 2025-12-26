@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +35,14 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::resource('users', UserController::class)
         ->only(['index', 'store', 'update', 'destroy'])
         ->middleware('can-manage-users');
+
+    Route::resource('categories', CategoryController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->middleware('can-manage-catalog');
+
+    Route::resource('units', UnitController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->middleware('can-manage-catalog');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 });

@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'active' => \App\Http\Middleware\EnsureUserIsActive::class,
             'can-manage-branches' => \App\Http\Middleware\EnsureUserCanManageBranches::class,
             'can-manage-users' => \App\Http\Middleware\EnsureUserCanManageUsers::class,
+            'can-manage-catalog' => \App\Http\Middleware\EnsureUserCanManageCatalog::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
