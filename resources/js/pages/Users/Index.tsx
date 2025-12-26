@@ -6,6 +6,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { Button } from '@/components/ui/button';
 import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
@@ -121,33 +122,36 @@ export default function Index({ users, branches }: IndexProps) {
                                             </Field>
                                             <Field>
                                                 <FieldLabel htmlFor="role">Role</FieldLabel>
-                                                <select
-                                                    id="role"
-                                                    className="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                                                    value={data.role}
-                                                    onChange={(event) => setData('role', event.target.value as User['role'])}
-                                                >
-                                                    <option value="super_admin">Super admin</option>
-                                                    <option value="branch_manager">Branch manager</option>
-                                                    <option value="cashier">Cashier</option>
-                                                </select>
+                                                <Select value={data.role} onValueChange={(value) => setData('role', value as User['role'])}>
+                                                    <SelectTrigger id="role" className="mt-1 w-full text-xs">
+                                                        <SelectValue placeholder="Select role" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="super_admin">Super admin</SelectItem>
+                                                        <SelectItem value="branch_manager">Branch manager</SelectItem>
+                                                        <SelectItem value="cashier">Cashier</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
                                                 <FieldDescription>Roles control what this user can see in your POS.</FieldDescription>
                                             </Field>
                                             <Field>
                                                 <FieldLabel htmlFor="branch_id">Branch</FieldLabel>
-                                                <select
-                                                    id="branch_id"
-                                                    className="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                                                    value={data.branch_id ?? ''}
-                                                    onChange={(event) => setData('branch_id', event.target.value ? Number(event.target.value) : null)}
+                                                <Select
+                                                    value={data.branch_id !== null ? String(data.branch_id) : 'none'}
+                                                    onValueChange={(value) => setData('branch_id', value === 'none' ? null : Number(value))}
                                                 >
-                                                    <option value="">No branch (HQ)</option>
-                                                    {branches.map((branch) => (
-                                                        <option key={branch.id} value={branch.id}>
-                                                            {branch.name}
-                                                        </option>
-                                                    ))}
-                                                </select>
+                                                    <SelectTrigger id="branch_id" className="mt-1 w-full text-xs">
+                                                        <SelectValue placeholder="No branch (HQ)" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="none">No branch (HQ)</SelectItem>
+                                                        {branches.map((branch) => (
+                                                            <SelectItem key={branch.id} value={String(branch.id)}>
+                                                                {branch.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
                                                 <FieldDescription>
                                                     Assign this user to a branch for branch-scoped access and reporting.
                                                 </FieldDescription>
@@ -331,32 +335,35 @@ function EditUserSheet({ user, branches }: EditUserSheetProps) {
                             </Field>
                             <Field>
                                 <FieldLabel htmlFor={`edit-role-${user.id}`}>Role</FieldLabel>
-                                <select
-                                    id={`edit-role-${user.id}`}
-                                    className="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                                    value={data.role}
-                                    onChange={(event) => setData('role', event.target.value as User['role'])}
-                                >
-                                    <option value="super_admin">Super admin</option>
-                                    <option value="branch_manager">Branch manager</option>
-                                    <option value="cashier">Cashier</option>
-                                </select>
+                                <Select value={data.role} onValueChange={(value) => setData('role', value as User['role'])}>
+                                    <SelectTrigger id={`edit-role-${user.id}`} className="mt-1 w-full text-xs">
+                                        <SelectValue placeholder="Select role" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="super_admin">Super admin</SelectItem>
+                                        <SelectItem value="branch_manager">Branch manager</SelectItem>
+                                        <SelectItem value="cashier">Cashier</SelectItem>
+                                    </SelectContent>
+                                </Select>
                             </Field>
                             <Field>
                                 <FieldLabel htmlFor={`edit-branch-${user.id}`}>Branch</FieldLabel>
-                                <select
-                                    id={`edit-branch-${user.id}`}
-                                    className="mt-1 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 shadow-sm focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                                    value={data.branch_id ?? ''}
-                                    onChange={(event) => setData('branch_id', event.target.value ? Number(event.target.value) : null)}
+                                <Select
+                                    value={data.branch_id !== null ? String(data.branch_id) : 'none'}
+                                    onValueChange={(value) => setData('branch_id', value === 'none' ? null : Number(value))}
                                 >
-                                    <option value="">No branch (HQ)</option>
-                                    {branches.map((branch) => (
-                                        <option key={branch.id} value={branch.id}>
-                                            {branch.name}
-                                        </option>
-                                    ))}
-                                </select>
+                                    <SelectTrigger id={`edit-branch-${user.id}`} className="mt-1 w-full text-xs">
+                                        <SelectValue placeholder="No branch (HQ)" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="none">No branch (HQ)</SelectItem>
+                                        {branches.map((branch) => (
+                                            <SelectItem key={branch.id} value={String(branch.id)}>
+                                                {branch.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </Field>
                             <Field>
                                 <FieldLabel htmlFor={`edit-password-${user.id}`}>New password</FieldLabel>
