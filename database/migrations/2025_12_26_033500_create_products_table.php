@@ -12,6 +12,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('sku')->unique();
+            $table->string('type', 20)->default('product');
             $table->foreignId('category_id')->nullable()->constrained('categories')->nullOnDelete();
             $table->foreignId('unit_id')->nullable()->constrained('units')->nullOnDelete();
             $table->decimal('price', 10, 2)->default(0);
@@ -25,4 +26,3 @@ return new class extends Migration
         Schema::dropIfExists('products');
     }
 };
-

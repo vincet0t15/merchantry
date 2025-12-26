@@ -16,7 +16,7 @@ class ProductController extends Controller
     {
         $products = Product::with(['category', 'unit', 'stocks.branch'])
             ->orderBy('name')
-            ->get(['id', 'name', 'sku', 'category_id', 'unit_id', 'price', 'is_active']);
+            ->get(['id', 'name', 'sku', 'type', 'category_id', 'unit_id', 'price', 'is_active']);
 
         $categories = Category::orderBy('name')->get(['id', 'name']);
         $units = Unit::orderBy('name')->get(['id', 'name', 'code']);
@@ -66,6 +66,7 @@ class ProductController extends Controller
                 'id' => $product->id,
                 'name' => $product->name,
                 'sku' => $product->sku,
+                'type' => $product->type,
                 'category_id' => $product->category_id,
                 'unit_id' => $product->unit_id,
                 'price' => $product->price,
@@ -83,6 +84,7 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'sku' => ['required', 'string', 'max:255', 'unique:products,sku'],
+            'type' => ['required', 'string', 'in:product,menu,consignment'],
             'category_id' => ['nullable', 'integer', 'exists:categories,id'],
             'unit_id' => ['nullable', 'integer', 'exists:units,id'],
             'price' => ['required', 'numeric', 'min:0'],
@@ -98,6 +100,7 @@ class ProductController extends Controller
         $product = Product::create([
             'name' => $validated['name'],
             'sku' => $validated['sku'],
+            'type' => $validated['type'],
             'category_id' => $validated['category_id'] ?? null,
             'unit_id' => $validated['unit_id'] ?? null,
             'price' => $validated['price'],
@@ -134,6 +137,7 @@ class ProductController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'sku' => ['required', 'string', 'max:255', 'unique:products,sku,' . $product->id],
+            'type' => ['required', 'string', 'in:product,menu,consignment'],
             'category_id' => ['nullable', 'integer', 'exists:categories,id'],
             'unit_id' => ['nullable', 'integer', 'exists:units,id'],
             'price' => ['required', 'numeric', 'min:0'],
@@ -146,6 +150,7 @@ class ProductController extends Controller
         $data = [
             'name' => $validated['name'],
             'sku' => $validated['sku'],
+            'type' => $validated['type'],
             'category_id' => $validated['category_id'] ?? null,
             'unit_id' => $validated['unit_id'] ?? null,
             'price' => $validated['price'],

@@ -28,6 +28,7 @@ type Product = {
     id: number;
     name: string;
     sku: string;
+    type: 'product' | 'menu' | 'consignment';
     category_id: number | null;
     unit_id: number | null;
     price: number | string;
@@ -108,6 +109,7 @@ export default function Index({ products, branches }: IndexProps) {
                                             <tr className="border-b border-slate-200 bg-slate-50 text-xs font-semibold tracking-wide text-slate-500 uppercase">
                                                 <th className="px-3 py-2">Name</th>
                                                 <th className="px-3 py-2">SKU</th>
+                                                <th className="px-3 py-2">Type</th>
                                                 <th className="px-3 py-2">Category</th>
                                                 <th className="px-3 py-2">Unit</th>
                                                 <th className="px-3 py-2 text-right">Price</th>
@@ -121,6 +123,11 @@ export default function Index({ products, branches }: IndexProps) {
                                                 <tr key={product.id} className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/60">
                                                     <td className="px-3 py-2 text-sm font-medium text-slate-900">{product.name}</td>
                                                     <td className="px-3 py-2 text-xs text-slate-600">{product.sku}</td>
+                                                    <td className="px-3 py-2 text-xs text-slate-600">
+                                                        {product.type === 'product' && 'Product'}
+                                                        {product.type === 'menu' && 'Menu'}
+                                                        {product.type === 'consignment' && 'Consignment'}
+                                                    </td>
                                                     <td className="px-3 py-2 text-xs text-slate-600">{product.category?.name ?? '—'}</td>
                                                     <td className="px-3 py-2 text-xs text-slate-600">
                                                         {product.unit ? `${product.unit.name} (${product.unit.code})` : '—'}

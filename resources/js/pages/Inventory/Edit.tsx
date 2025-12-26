@@ -36,6 +36,7 @@ type Product = {
     id: number;
     name: string;
     sku: string;
+    type: 'product' | 'menu' | 'consignment';
     category_id: number | null;
     unit_id: number | null;
     price: number;
@@ -54,6 +55,7 @@ export default function Edit({ product, categories, units, branches }: EditProps
     type EditProductForm = {
         name: string;
         sku: string;
+        type: 'product' | 'menu' | 'consignment';
         category_id: number | null;
         unit_id: number | null;
         price: string;
@@ -75,6 +77,7 @@ export default function Edit({ product, categories, units, branches }: EditProps
     const { data, setData, put, processing } = useForm<EditProductForm>({
         name: product.name,
         sku: product.sku,
+        type: product.type as EditProductForm['type'],
         category_id: product.category_id,
         unit_id: product.unit_id,
         price: String(product.price),
@@ -136,6 +139,44 @@ export default function Edit({ product, categories, units, branches }: EditProps
                                                 onChange={(event) => setData('name', event.target.value)}
                                                 required
                                             />
+                                        </Field>
+                                        <Field>
+                                            <FieldLabel>Type</FieldLabel>
+                                            <div className="mt-1 flex flex-wrap gap-3 text-xs text-slate-700">
+                                                <label className="inline-flex items-center gap-1.5">
+                                                    <input
+                                                        type="radio"
+                                                        name="type"
+                                                        value="product"
+                                                        checked={data.type === 'product'}
+                                                        onChange={() => setData('type', 'product')}
+                                                        className="h-3.5 w-3.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                                                    />
+                                                    <span>Product</span>
+                                                </label>
+                                                <label className="inline-flex items-center gap-1.5">
+                                                    <input
+                                                        type="radio"
+                                                        name="type"
+                                                        value="menu"
+                                                        checked={data.type === 'menu'}
+                                                        onChange={() => setData('type', 'menu')}
+                                                        className="h-3.5 w-3.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                                                    />
+                                                    <span>Menu</span>
+                                                </label>
+                                                <label className="inline-flex items-center gap-1.5">
+                                                    <input
+                                                        type="radio"
+                                                        name="type"
+                                                        value="consignment"
+                                                        checked={data.type === 'consignment'}
+                                                        onChange={() => setData('type', 'consignment')}
+                                                        className="h-3.5 w-3.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                                                    />
+                                                    <span>Consignment</span>
+                                                </label>
+                                            </div>
                                         </Field>
                                         <Field>
                                             <FieldLabel htmlFor="sku">SKU / Code</FieldLabel>
