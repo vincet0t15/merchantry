@@ -25,6 +25,8 @@ type CreateProductOnlyProps = {
 };
 
 export default function CreateProductOnly({ categories, units }: CreateProductOnlyProps) {
+    type TrackingMode = 'track' | 'bundle' | 'none';
+
     type CreateProductForm = {
         name: string;
         sku: string;
@@ -33,6 +35,7 @@ export default function CreateProductOnly({ categories, units }: CreateProductOn
         unit_id: number | null;
         price: string;
         is_active: boolean;
+        tracking_mode: TrackingMode;
     };
 
     const { data, setData, post, processing, reset } = useForm<CreateProductForm>({
@@ -43,6 +46,7 @@ export default function CreateProductOnly({ categories, units }: CreateProductOn
         unit_id: null,
         price: '',
         is_active: true,
+        tracking_mode: 'none',
     });
 
     const generateSku = () => {
@@ -70,7 +74,7 @@ export default function CreateProductOnly({ categories, units }: CreateProductOn
 
     return (
         <>
-            <Head title="New product" />
+            <Head title="New Product or Service" />
             <SidebarProvider>
                 <AppSidebar />
                 <SidebarInset>
@@ -101,15 +105,32 @@ export default function CreateProductOnly({ categories, units }: CreateProductOn
                     <div className="flex flex-1 flex-col gap-4 p-4 pt-4">
                         <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
                             <div className="mb-6">
-                                <h1 className="text-base font-semibold tracking-tight">New product (no inventory tracking)</h1>
-                                <p className="text-xs text-slate-600">
-                                    Gumawa ng bagong produkto para sa direct selling. Walang initial stock dito.
-                                </p>
+                                <h1 className="text-base font-semibold tracking-tight">New Product or Service</h1>
+                                <p className="text-xs text-slate-600">Form para gumawa ng bagong produkto o serbisyo na ibebenta mo.</p>
                             </div>
                             <form onSubmit={handleSubmit} className="space-y-8">
                                 <div>
-                                    <h2 className="mb-4 text-xs font-semibold tracking-wide text-slate-500 uppercase">Details</h2>
+                                    <h2 className="mb-4 text-xs font-semibold tracking-wide text-slate-500 uppercase">Basic information</h2>
                                     <FieldGroup className="grid gap-4 md:grid-cols-2">
+                                        <Field>
+                                            <FieldLabel htmlFor="category_id">Category</FieldLabel>
+                                            <Select
+                                                value={data.category_id !== null ? String(data.category_id) : 'none'}
+                                                onValueChange={(value) => setData('category_id', value === 'none' ? null : Number(value))}
+                                            >
+                                                <SelectTrigger id="category_id" className="mt-1 w-full text-xs">
+                                                    <SelectValue placeholder="No category" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="none">No category</SelectItem>
+                                                    {categories.map((category) => (
+                                                        <SelectItem key={category.id} value={String(category.id)}>
+                                                            {category.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </Field>
                                         <Field>
                                             <FieldLabel htmlFor="name">Product name</FieldLabel>
                                             <Input
@@ -121,6 +142,24 @@ export default function CreateProductOnly({ categories, units }: CreateProductOn
                                                 onChange={(event) => setData('name', event.target.value)}
                                                 required
                                             />
+                                        </Field>
+                                        <Field>
+                                            <FieldLabel htmlFor="sku">SKU</FieldLabel>
+                                            <div className="flex gap-2">
+                                                <Input
+                                                    id="sku"
+                                                    type="text"
+                                                    placeholder="SKU-0001"
+                                                    value={data.sku}
+                                                    onChange={(event) => setData('sku', event.target.value)}
+                                                    required
+                                                    className="flex-1"
+                                                />
+                                                <Button type="button" variant="outline" size="sm" onClick={generateSku}>
+                                                    Suggest
+                                                </Button>
+                                            </div>
+                                            <FieldDescription>Unique identifier used in barcodes, imports, and reports.</FieldDescription>
                                         </Field>
                                         <Field>
                                             <FieldLabel>Type</FieldLabel>
@@ -161,43 +200,6 @@ export default function CreateProductOnly({ categories, units }: CreateProductOn
                                             </div>
                                         </Field>
                                         <Field>
-                                            <FieldLabel htmlFor="sku">SKU</FieldLabel>
-                                            <div className="flex gap-2">
-                                                <Input
-                                                    id="sku"
-                                                    type="text"
-                                                    placeholder="SKU-0001"
-                                                    value={data.sku}
-                                                    onChange={(event) => setData('sku', event.target.value)}
-                                                    required
-                                                    className="flex-1"
-                                                />
-                                                <Button type="button" variant="outline" size="sm" onClick={generateSku}>
-                                                    Suggest
-                                                </Button>
-                                            </div>
-                                            <FieldDescription>Unique identifier used in barcodes, imports, and reports.</FieldDescription>
-                                        </Field>
-                                        <Field>
-                                            <FieldLabel htmlFor="category_id">Category</FieldLabel>
-                                            <Select
-                                                value={data.category_id !== null ? String(data.category_id) : 'none'}
-                                                onValueChange={(value) => setData('category_id', value === 'none' ? null : Number(value))}
-                                            >
-                                                <SelectTrigger id="category_id" className="mt-1 w-full text-xs">
-                                                    <SelectValue placeholder="No category" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="none">No category</SelectItem>
-                                                    {categories.map((category) => (
-                                                        <SelectItem key={category.id} value={String(category.id)}>
-                                                            {category.name}
-                                                        </SelectItem>
-                                                    ))}
-                                                </SelectContent>
-                                            </Select>
-                                        </Field>
-                                        <Field>
                                             <FieldLabel htmlFor="unit_id">Unit</FieldLabel>
                                             <Select
                                                 value={data.unit_id !== null ? String(data.unit_id) : 'none'}
@@ -220,7 +222,72 @@ export default function CreateProductOnly({ categories, units }: CreateProductOn
                                 </div>
 
                                 <div>
-                                    <h2 className="mb-4 text-xs font-semibold tracking-wide text-slate-500 uppercase">Pricing</h2>
+                                    <h2 className="mb-3 text-xs font-semibold tracking-wide text-slate-500 uppercase">Inventory & tracking</h2>
+                                    <div className="mb-4 grid gap-3 md:grid-cols-3">
+                                        <button
+                                            type="button"
+                                            onClick={() => setData('tracking_mode', 'track')}
+                                            className={`rounded-lg border px-3 py-3 text-left text-xs ${
+                                                data.tracking_mode === 'track'
+                                                    ? 'border-emerald-500 bg-emerald-50 text-emerald-800'
+                                                    : 'border-slate-200 bg-white text-slate-700'
+                                            }`}
+                                        >
+                                            <div className="font-semibold">Track stock</div>
+                                            <div className="mt-1 text-[11px] text-slate-500">Track individual items in your inventory.</div>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setData('tracking_mode', 'bundle')}
+                                            className={`rounded-lg border px-3 py-3 text-left text-xs ${
+                                                data.tracking_mode === 'bundle'
+                                                    ? 'border-emerald-500 bg-emerald-50 text-emerald-800'
+                                                    : 'border-slate-200 bg-white text-slate-700'
+                                            }`}
+                                        >
+                                            <div className="font-semibold">Bundle/Recipe</div>
+                                            <div className="mt-1 text-[11px] text-slate-500">
+                                                Combine multiple items to create a bundle or recipe.
+                                            </div>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setData('tracking_mode', 'none')}
+                                            className={`rounded-lg border px-3 py-3 text-left text-xs ${
+                                                data.tracking_mode === 'none'
+                                                    ? 'border-emerald-500 bg-emerald-50 text-emerald-800'
+                                                    : 'border-slate-200 bg-white text-slate-700'
+                                            }`}
+                                        >
+                                            <div className="font-semibold">No tracking</div>
+                                            <div className="mt-1 text-[11px] text-slate-500">Sell without counting stock (like services).</div>
+                                        </button>
+                                    </div>
+                                    <FieldGroup className="grid gap-4 md:grid-cols-2">
+                                        <Field>
+                                            <FieldLabel htmlFor="unit_id_inventory">Base unit</FieldLabel>
+                                            <Select
+                                                value={data.unit_id !== null ? String(data.unit_id) : 'none'}
+                                                onValueChange={(value) => setData('unit_id', value === 'none' ? null : Number(value))}
+                                            >
+                                                <SelectTrigger id="unit_id_inventory" className="mt-1 w-full text-xs">
+                                                    <SelectValue placeholder="Select unit" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="none">No unit</SelectItem>
+                                                    {units.map((unit) => (
+                                                        <SelectItem key={unit.id} value={String(unit.id)}>
+                                                            {unit.name} ({unit.code})
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                        </Field>
+                                    </FieldGroup>
+                                </div>
+
+                                <div>
+                                    <h2 className="mb-4 text-xs font-semibold tracking-wide text-slate-500 uppercase">Product configuration</h2>
                                     <FieldGroup className="grid gap-4 md:grid-cols-2">
                                         <Field>
                                             <FieldLabel htmlFor="price">Price</FieldLabel>
@@ -245,7 +312,9 @@ export default function CreateProductOnly({ categories, units }: CreateProductOn
                                                 />
                                                 Active product
                                             </label>
-                                            <FieldDescription>Inactive products stay in history but disappear from day-to-day flows.</FieldDescription>
+                                            <FieldDescription>
+                                                Inactive products stay in history but disappear from day-to-day flows.
+                                            </FieldDescription>
                                         </Field>
                                     </FieldGroup>
                                 </div>
@@ -266,4 +335,3 @@ export default function CreateProductOnly({ categories, units }: CreateProductOn
         </>
     );
 }
-
