@@ -62,6 +62,17 @@ class ProductController extends Controller
         ]);
     }
 
+    public function createProduct()
+    {
+        $categories = Category::orderBy('name')->get(['id', 'name']);
+        $units = Unit::orderBy('name')->get(['id', 'name', 'code']);
+
+        return Inertia::render('Products/Create', [
+            'categories' => $categories,
+            'units' => $units,
+        ]);
+    }
+
     public function edit(Product $product)
     {
         $categories = Category::orderBy('name')->get(['id', 'name']);

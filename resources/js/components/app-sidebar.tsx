@@ -44,20 +44,12 @@ const data = {
             url: '',
             icon: Settings2,
         },
+
         {
-            title: 'Catalog',
+            title: 'Products',
             url: '/inventory',
             icon: Store,
-            items: [
-                {
-                    title: 'Products/Services',
-                    url: '/inventory',
-                },
-                {
-                    title: 'New product',
-                    url: '/inventory/create',
-                },
-            ],
+          
         },
         {
             title: 'Inventory',
