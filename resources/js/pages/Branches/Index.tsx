@@ -20,6 +20,24 @@ type IndexProps = {
     branches: Branch[];
 };
 
+function suggestBranchCode(name: string): string {
+    const trimmed = name.trim();
+    if (!trimmed) {
+        return '';
+    }
+    const words = trimmed.split(/\s+/);
+    let base: string;
+    if (words.length === 1) {
+        base = words[0].slice(0, 3).toUpperCase();
+    } else {
+        base = words
+            .map((word) => word[0] ?? '')
+            .join('')
+            .toUpperCase();
+    }
+    return `${base}-01`;
+}
+
 export default function Index({ branches }: IndexProps) {
     type CreateBranchForm = {
         name: string;
@@ -34,6 +52,8 @@ export default function Index({ branches }: IndexProps) {
         location: '',
         is_active: true,
     });
+
+    const suggestedCode = suggestBranchCode(data.name);
 
     const handleDelete = (branch: Branch) => {
         if (!confirm(`Delete branch "${branch.name}"?`)) {
@@ -108,7 +128,21 @@ export default function Index({ branches }: IndexProps) {
                                                     onChange={(event) => setData('code', event.target.value)}
                                                     required
                                                 />
-                                                <FieldDescription>Short identifier used in reports and stock locations.</FieldDescription>
+                                                <FieldDescription>
+                                                    Short identifier used in reports and stock locations.
+                                                    {suggestedCode && !data.code && (
+                                                        <>
+                                                            {' '}
+                                                            <button
+                                                                type="button"
+                                                                className="font-medium text-emerald-700 hover:text-emerald-800"
+                                                                onClick={() => setData('code', suggestedCode)}
+                                                            >
+                                                                Use {suggestedCode}
+                                                            </button>
+                                                        </>
+                                                    )}
+                                                </FieldDescription>
                                             </Field>
                                             <Field>
                                                 <FieldLabel htmlFor="location">Location</FieldLabel>
@@ -196,7 +230,21 @@ export default function Index({ branches }: IndexProps) {
                                                                 onChange={(event) => setData('code', event.target.value)}
                                                                 required
                                                             />
-                                                            <FieldDescription>Short identifier used in reports and stock locations.</FieldDescription>
+                                                            <FieldDescription>
+                                                                Short identifier used in reports and stock locations.
+                                                                {suggestedCode && !data.code && (
+                                                                    <>
+                                                                        {' '}
+                                                                        <button
+                                                                            type="button"
+                                                                            className="font-medium text-emerald-700 hover:text-emerald-800"
+                                                                            onClick={() => setData('code', suggestedCode)}
+                                                                        >
+                                                                            Use {suggestedCode}
+                                                                        </button>
+                                                                    </>
+                                                                )}
+                                                            </FieldDescription>
                                                         </Field>
                                                         <Field>
                                                             <FieldLabel htmlFor="empty-location">Location</FieldLabel>
