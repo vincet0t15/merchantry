@@ -1,6 +1,6 @@
 'use client';
 
-import { AudioWaveform, Command, Frame, GalleryVerticalEnd, Map, PieChart, Settings2, SquareTerminal, Store } from 'lucide-react';
+import { AudioWaveform, Command, Frame, GalleryVerticalEnd, Map, PieChart, Settings2, Store } from 'lucide-react';
 import * as React from 'react';
 
 import { NavMain } from '@/components/nav-main';
@@ -35,16 +35,14 @@ const data = {
     ],
     navMain: [
         {
+            title: 'Dashboard',
+            url: '/dashboard',
+            icon: Settings2,
+        },
+        {
             title: 'POS',
-            url: '#',
-            icon: SquareTerminal,
-            isActive: true,
-            items: [
-                {
-                    title: 'Dashboard',
-                    url: '/dashboard',
-                },
-            ],
+            url: '',
+            icon: Settings2,
         },
         {
             title: 'Stores',
@@ -70,10 +68,12 @@ const data = {
                 {
                     title: 'Categories',
                     url: '/categories',
+                    icon: Settings2,
                 },
                 {
                     title: 'Units',
                     url: '/units',
+                    icon: Settings2,
                 },
             ],
         },
