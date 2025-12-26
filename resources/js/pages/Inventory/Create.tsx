@@ -39,6 +39,7 @@ export default function Create({ categories, units, branches }: CreateProps) {
         unit_id: number | null;
         price: string;
         is_active: boolean;
+        is_for_sale: boolean;
         stocks: {
             branch_id: number;
             initial_quantity: string;
@@ -54,6 +55,7 @@ export default function Create({ categories, units, branches }: CreateProps) {
         unit_id: null,
         price: '',
         is_active: true,
+        is_for_sale: false,
         stocks: branches.map((branch) => ({
             branch_id: branch.id,
             initial_quantity: '',
@@ -100,21 +102,17 @@ export default function Create({ categories, units, branches }: CreateProps) {
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator className="hidden md:block" />
                                     <BreadcrumbItem>
-                                        <BreadcrumbLink href="/inventory">Catalog</BreadcrumbLink>
+                                        <BreadcrumbLink href="/inventory-items">Inventory</BreadcrumbLink>
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator />
                                     <BreadcrumbItem>
-                                        <BreadcrumbLink href="/inventory">Products/Services</BreadcrumbLink>
-                                    </BreadcrumbItem>
-                                    <BreadcrumbSeparator />
-                                    <BreadcrumbItem>
-                                        <BreadcrumbPage>New product</BreadcrumbPage>
+                                        <BreadcrumbPage>New inventory item</BreadcrumbPage>
                                     </BreadcrumbItem>
                                 </BreadcrumbList>
                             </Breadcrumb>
                         </div>
                         <Button variant="outline" size="sm" asChild>
-                            <Link href="/inventory">Cancel</Link>
+                            <Link href="/inventory-items">Cancel</Link>
                         </Button>
                     </header>
                     <div className="flex flex-1 flex-col gap-4 p-4 pt-4">
@@ -138,44 +136,6 @@ export default function Create({ categories, units, branches }: CreateProps) {
                                                 onChange={(event) => setData('name', event.target.value)}
                                                 required
                                             />
-                                        </Field>
-                                        <Field>
-                                            <FieldLabel>Type</FieldLabel>
-                                            <div className="mt-1 flex flex-wrap gap-3 text-xs text-slate-700">
-                                                <label className="inline-flex items-center gap-1.5">
-                                                    <input
-                                                        type="radio"
-                                                        name="type"
-                                                        value="product"
-                                                        checked={data.type === 'product'}
-                                                        onChange={() => setData('type', 'product')}
-                                                        className="h-3.5 w-3.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                                                    />
-                                                    <span>Product</span>
-                                                </label>
-                                                <label className="inline-flex items-center gap-1.5">
-                                                    <input
-                                                        type="radio"
-                                                        name="type"
-                                                        value="menu"
-                                                        checked={data.type === 'menu'}
-                                                        onChange={() => setData('type', 'menu')}
-                                                        className="h-3.5 w-3.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                                                    />
-                                                    <span>Menu</span>
-                                                </label>
-                                                <label className="inline-flex items-center gap-1.5">
-                                                    <input
-                                                        type="radio"
-                                                        name="type"
-                                                        value="consignment"
-                                                        checked={data.type === 'consignment'}
-                                                        onChange={() => setData('type', 'consignment')}
-                                                        className="h-3.5 w-3.5 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                                                    />
-                                                    <span>Consignment</span>
-                                                </label>
-                                            </div>
                                         </Field>
                                         <Field>
                                             <FieldLabel htmlFor="sku">SKU</FieldLabel>

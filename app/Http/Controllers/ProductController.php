@@ -15,6 +15,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::with(['category', 'unit', 'stocks.branch'])
+            ->where('is_for_sale', true)
             ->orderBy('name')
             ->get(['id', 'name', 'sku', 'type', 'category_id', 'unit_id', 'price', 'cost', 'is_active']);
 
@@ -123,6 +124,7 @@ class ProductController extends Controller
             'price' => ['required', 'numeric', 'min:0'],
             'cost' => ['nullable', 'numeric', 'min:0'],
             'is_active' => ['boolean'],
+            'is_for_sale' => ['boolean'],
             'stocks' => ['nullable', 'array'],
             'stocks.*.branch_id' => ['required_with:stocks.*.initial_quantity,stocks.*.reorder_level', 'integer', 'exists:branches,id'],
             'stocks.*.initial_quantity' => ['nullable', 'numeric', 'min:0'],
@@ -141,6 +143,7 @@ class ProductController extends Controller
             'price' => $validated['price'],
             'cost' => $validated['cost'] ?? 0,
             'is_active' => $validated['is_active'],
+            'is_for_sale' => $request->boolean('is_for_sale', true),
         ]);
 
         $stocks = $validated['stocks'] ?? [];
@@ -180,6 +183,7 @@ class ProductController extends Controller
             'price' => ['required', 'numeric', 'min:0'],
             'cost' => ['nullable', 'numeric', 'min:0'],
             'is_active' => ['boolean'],
+            'is_for_sale' => ['boolean'],
             'stocks' => ['nullable', 'array'],
             'stocks.*.branch_id' => ['required_with:stocks.*.reorder_level', 'integer', 'exists:branches,id'],
             'stocks.*.reorder_level' => ['nullable', 'numeric', 'min:0'],
@@ -195,6 +199,7 @@ class ProductController extends Controller
             'price' => $validated['price'],
             'cost' => $validated['cost'] ?? 0,
             'is_active' => $request->boolean('is_active', true),
+            'is_for_sale' => $request->boolean('is_for_sale', true),
         ];
 
         $product->update($data);

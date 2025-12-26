@@ -63,7 +63,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         ->name('products.create')
         ->middleware('can-manage-catalog');
 
-    Route::get('inventory/create', [ProductController::class, 'create'])
+    Route::get('inventory-items/create', [ProductController::class, 'create'])
         ->name('inventory.create')
         ->middleware('can-manage-catalog');
 
