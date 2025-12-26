@@ -1,6 +1,6 @@
 'use client';
 
-import { AudioWaveform, BookOpen, Bot, Command, Frame, GalleryVerticalEnd, Map, PieChart, Settings2, SquareTerminal } from 'lucide-react';
+import { AudioWaveform, BookOpen, Bot, Command, Frame, GalleryVerticalEnd, Map, PieChart, Settings2, Store, SquareTerminal } from 'lucide-react';
 import * as React from 'react';
 
 import { NavMain } from '@/components/nav-main';
@@ -35,22 +35,25 @@ const data = {
     ],
     navMain: [
         {
-            title: 'Playground',
+            title: 'POS',
             url: '#',
             icon: SquareTerminal,
             isActive: true,
             items: [
                 {
-                    title: 'History',
-                    url: '#',
+                    title: 'Dashboard',
+                    url: '/dashboard',
                 },
+            ],
+        },
+        {
+            title: 'Stores',
+            url: '#',
+            icon: Store,
+            items: [
                 {
-                    title: 'Starred',
-                    url: '#',
-                },
-                {
-                    title: 'Settings',
-                    url: '#',
+                    title: 'Branches',
+                    url: '/branches',
                 },
             ],
         },
@@ -60,15 +63,7 @@ const data = {
             icon: Bot,
             items: [
                 {
-                    title: 'Genesis',
-                    url: '#',
-                },
-                {
-                    title: 'Explorer',
-                    url: '#',
-                },
-                {
-                    title: 'Quantum',
+                    title: 'Playground',
                     url: '#',
                 },
             ],
@@ -82,18 +77,6 @@ const data = {
                     title: 'Introduction',
                     url: '#',
                 },
-                {
-                    title: 'Get Started',
-                    url: '#',
-                },
-                {
-                    title: 'Tutorials',
-                    url: '#',
-                },
-                {
-                    title: 'Changelog',
-                    url: '#',
-                },
             ],
         },
         {
@@ -103,18 +86,6 @@ const data = {
             items: [
                 {
                     title: 'General',
-                    url: '#',
-                },
-                {
-                    title: 'Team',
-                    url: '#',
-                },
-                {
-                    title: 'Billing',
-                    url: '#',
-                },
-                {
-                    title: 'Limits',
                     url: '#',
                 },
             ],
