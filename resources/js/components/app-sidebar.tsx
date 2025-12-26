@@ -1,6 +1,6 @@
 'use client';
 
-import { AudioWaveform, BookOpen, Bot, Command, Frame, GalleryVerticalEnd, Map, PieChart, Settings2, SquareTerminal, Store } from 'lucide-react';
+import { AudioWaveform, Command, Frame, GalleryVerticalEnd, Map, PieChart, Settings2, SquareTerminal, Store } from 'lucide-react';
 import * as React from 'react';
 
 import { NavMain } from '@/components/nav-main';
@@ -57,28 +57,7 @@ const data = {
                 },
             ],
         },
-        {
-            title: 'Models',
-            url: '#',
-            icon: Bot,
-            items: [
-                {
-                    title: 'Playground',
-                    url: '#',
-                },
-            ],
-        },
-        {
-            title: 'Documentation',
-            url: '#',
-            icon: BookOpen,
-            items: [
-                {
-                    title: 'Introduction',
-                    url: '#',
-                },
-            ],
-        },
+
         {
             title: 'Settings',
             url: '#',
@@ -87,6 +66,14 @@ const data = {
                 {
                     title: 'Users',
                     url: '/users',
+                },
+                {
+                    title: 'Categories',
+                    url: '/categories',
+                },
+                {
+                    title: 'Units',
+                    url: '/units',
                 },
             ],
         },
