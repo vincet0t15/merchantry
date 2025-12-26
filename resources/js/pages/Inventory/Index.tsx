@@ -85,7 +85,7 @@ export default function Index({ products }: IndexProps) {
                             </Breadcrumb>
                         </div>
                         <Button asChild className="gap-2">
-                            <Link href="/inventory/create">
+                            <Link href="/products/create">
                                 <Plus className="h-4 w-4" />
                                 New
                             </Link>

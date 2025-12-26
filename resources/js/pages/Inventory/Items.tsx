@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Head, Link } from '@inertiajs/react';
-import { AlertTriangle, DollarSign, Package, Pencil } from 'lucide-react';
+import { AlertTriangle, DollarSign, Package, Pencil, Plus } from 'lucide-react';
 
 type Category = {
     id: number;
@@ -108,6 +108,12 @@ export default function ItemsPage({ products }: ItemsPageProps) {
                                 </BreadcrumbList>
                             </Breadcrumb>
                         </div>
+                        <Button asChild className="gap-2">
+                            <Link href="/inventory/create">
+                                <Plus className="h-4 w-4" />
+                                New Item
+                            </Link>
+                        </Button>
                     </header>
                     <div className="flex flex-1 flex-col gap-6 p-4 pt-6">
                         {/* Stats Cards */}

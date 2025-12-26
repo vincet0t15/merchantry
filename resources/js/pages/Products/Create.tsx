@@ -120,11 +120,11 @@ export default function CreateProductOnly({ categories, units, branches }: Creat
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator className="hidden md:block" />
                                     <BreadcrumbItem>
-                                        <BreadcrumbLink href="/inventory">Products</BreadcrumbLink>
+                                        <BreadcrumbLink href="/inventory">Catalog</BreadcrumbLink>
                                     </BreadcrumbItem>
                                     <BreadcrumbSeparator />
                                     <BreadcrumbItem>
-                                        <BreadcrumbPage>New product</BreadcrumbPage>
+                                        <BreadcrumbPage>New Product or Service</BreadcrumbPage>
                                     </BreadcrumbItem>
                                 </BreadcrumbList>
                             </Breadcrumb>
