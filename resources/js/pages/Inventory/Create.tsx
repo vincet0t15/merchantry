@@ -38,6 +38,7 @@ export default function Create({ categories, units, branches }: CreateProps) {
         category_id: number | null;
         unit_id: number | null;
         price: string;
+        cost: string;
         is_active: boolean;
         is_for_sale: boolean;
         stocks: {
@@ -53,7 +54,8 @@ export default function Create({ categories, units, branches }: CreateProps) {
         type: 'product',
         category_id: null,
         unit_id: null,
-        price: '',
+        price: '0',
+        cost: '',
         is_active: true,
         is_for_sale: false,
         stocks: branches.map((branch) => ({
@@ -200,15 +202,15 @@ export default function Create({ categories, units, branches }: CreateProps) {
                                     <h2 className="mb-4 text-xs font-semibold tracking-wide text-slate-500 uppercase">Stock information</h2>
                                     <FieldGroup className="grid gap-4 md:grid-cols-2">
                                         <Field>
-                                            <FieldLabel htmlFor="price">Cost (per base unit)</FieldLabel>
+                                            <FieldLabel htmlFor="cost">Cost (per base unit)</FieldLabel>
                                             <Input
-                                                id="price"
+                                                id="cost"
                                                 type="number"
                                                 min="0"
                                                 step="0.01"
                                                 placeholder="0.00"
-                                                value={data.price}
-                                                onChange={(event) => setData('price', event.target.value)}
+                                                value={data.cost}
+                                                onChange={(event) => setData('cost', event.target.value)}
                                                 required
                                             />
                                         </Field>

@@ -40,6 +40,7 @@ type Product = {
     category_id: number | null;
     unit_id: number | null;
     price: number;
+    cost: number;
     is_active: boolean;
     stocks?: StockRow[];
 };
@@ -59,6 +60,7 @@ export default function Edit({ product, categories, units, branches }: EditProps
         category_id: number | null;
         unit_id: number | null;
         price: string;
+        cost: string;
         is_active: boolean;
         stocks: {
             branch_id: number;
@@ -81,6 +83,7 @@ export default function Edit({ product, categories, units, branches }: EditProps
         category_id: product.category_id,
         unit_id: product.unit_id,
         price: String(product.price),
+        cost: String(product.cost ?? 0),
         is_active: product.is_active,
         stocks: initialStocks,
     });
@@ -237,14 +240,15 @@ export default function Edit({ product, categories, units, branches }: EditProps
                                     <h2 className="mb-4 text-xs font-semibold tracking-wide text-slate-500 uppercase">Stock information</h2>
                                     <FieldGroup className="grid gap-4 md:grid-cols-2">
                                         <Field>
-                                            <FieldLabel htmlFor="price">Selling price</FieldLabel>
+                                            <FieldLabel htmlFor="cost">Cost (per base unit)</FieldLabel>
                                             <Input
-                                                id="price"
+                                                id="cost"
                                                 type="number"
                                                 min="0"
                                                 step="0.01"
-                                                value={data.price}
-                                                onChange={(event) => setData('price', event.target.value)}
+                                                placeholder="0.00"
+                                                value={data.cost}
+                                                onChange={(event) => setData('cost', event.target.value)}
                                                 required
                                             />
                                         </Field>

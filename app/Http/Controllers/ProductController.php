@@ -103,6 +103,7 @@ class ProductController extends Controller
                 'category_id' => $product->category_id,
                 'unit_id' => $product->unit_id,
                 'price' => $product->price,
+                'cost' => $product->cost,
                 'is_active' => $product->is_active,
                 'stocks' => $stocks,
             ],
