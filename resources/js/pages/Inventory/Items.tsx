@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Head, Link } from '@inertiajs/react';
-import { AlertTriangle, DollarSign, Package, Pencil, Plus } from 'lucide-react';
+import { AlertTriangle, DollarSign, History, Package, Pencil, Plus } from 'lucide-react';
 
 type Category = {
     id: number;
@@ -214,17 +214,31 @@ export default function ItemsPage({ products }: ItemsPageProps) {
                                                         </td>
                                                         <td className="px-6 py-4 text-slate-700">{totalReorderLevel}</td>
                                                         <td className="px-6 py-4 text-right text-slate-700">{formatCurrency(cost)}</td>
-                                                        <td className="px-6 py-4 text-right">
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                asChild
-                                                                className="h-8 w-8 text-slate-400 hover:text-slate-600"
-                                                            >
-                                                                <Link href={`/products/${product.id}/edit`}>
-                                                                    <Pencil className="h-4 w-4" />
-                                                                </Link>
-                                                            </Button>
+                                                        <td className="px-6 py-4 text-right whitespace-nowrap">
+                                                            <div className="flex justify-end gap-2">
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    asChild
+                                                                    className="h-8 w-8 text-slate-400 hover:text-slate-600"
+                                                                    title="Stock History"
+                                                                >
+                                                                    <Link href={`/products/${product.id}/stock`}>
+                                                                        <History className="h-4 w-4" />
+                                                                    </Link>
+                                                                </Button>
+                                                                <Button
+                                                                    variant="ghost"
+                                                                    size="icon"
+                                                                    asChild
+                                                                    className="h-8 w-8 text-slate-400 hover:text-slate-600"
+                                                                    title="Edit Item"
+                                                                >
+                                                                    <Link href={`/products/${product.id}/edit`}>
+                                                                        <Pencil className="h-4 w-4" />
+                                                                    </Link>
+                                                                </Button>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 );

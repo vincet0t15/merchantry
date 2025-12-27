@@ -152,10 +152,6 @@ class ProductController extends Controller
             $initialQuantity = $stockData['initial_quantity'] ?? null;
             $reorderLevel = $stockData['reorder_level'] ?? null;
 
-            if ($initialQuantity === null && $reorderLevel === null) {
-                continue;
-            }
-
             $initialQuantityValue = $initialQuantity !== null ? (float) $initialQuantity : 0.0;
             $reorderLevelValue = $reorderLevel !== null ? (float) $reorderLevel : 0.0;
 
@@ -209,10 +205,6 @@ class ProductController extends Controller
         foreach ($stocks as $stockData) {
             $reorderLevel = $stockData['reorder_level'] ?? null;
 
-            if ($reorderLevel === null) {
-                continue;
-            }
-
             $stock = Stock::firstOrCreate(
                 [
                     'product_id' => $product->id,
@@ -225,7 +217,10 @@ class ProductController extends Controller
                 ]
             );
 
-            $stock->reorder_level = (float) $reorderLevel;
+            if ($reorderLevel !== null) {
+                $stock->reorder_level = (float) $reorderLevel;
+            }
+
             $stock->save();
         }
 
