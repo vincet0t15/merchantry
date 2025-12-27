@@ -1,13 +1,16 @@
 import { AppSidebar } from '@/components/app-sidebar';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Info } from 'lucide-react';
+import axios from 'axios';
+import { Info, Plus, Trash2, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 type Category = {
     id: number;
@@ -34,6 +37,22 @@ type CreateProductOnlyProps = {
 export default function CreateProductOnly({ categories, units, branches }: CreateProductOnlyProps) {
     type TrackingMode = 'track' | 'bundle' | 'none';
 
+    type VariantOption = {
+        id: string;
+        name: string;
+        values: string[];
+    };
+
+    type VariantRow = {
+        id: string;
+        name: string;
+        sku: string;
+        price: string;
+        cost: string;
+        stock: string;
+        attributes: Record<string, string>;
+    };
+
     type CreateProductForm = {
         name: string;
         sku: string;
@@ -52,6 +71,9 @@ export default function CreateProductOnly({ categories, units, branches }: Creat
             initial_quantity: string;
             reorder_level: string;
         }[];
+        has_variants: boolean;
+        variant_options: VariantOption[];
+        variants: VariantRow[];
     };
 
     const form = useForm<CreateProductForm>({
@@ -64,7 +86,7 @@ export default function CreateProductOnly({ categories, units, branches }: Creat
         price: '',
         cost: '',
         is_active: true,
-        tracking_mode: 'track', // Default to track based on image
+        tracking_mode: 'track',
         initial_stock: '',
         reorder_level: '',
         stocks: branches.map((branch) => ({
@@ -72,9 +94,126 @@ export default function CreateProductOnly({ categories, units, branches }: Creat
             initial_quantity: '',
             reorder_level: '',
         })),
+        has_variants: false,
+        variant_options: [],
+        variants: [],
     });
 
     const { data, setData, processing, reset } = form;
+
+    const [localCategories, setLocalCategories] = useState<Category[]>(categories);
+    const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+    const [newCategoryName, setNewCategoryName] = useState('');
+    const [isCreatingCategory, setIsCreatingCategory] = useState(false);
+
+    const handleCreateCategory = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsCreatingCategory(true);
+        try {
+            const response = await axios.post(
+                '/categories',
+                {
+                    name: newCategoryName,
+                    is_active: true,
+                },
+                {
+                    headers: {
+                        Accept: 'application/json',
+                    },
+                },
+            );
+            const newCategory = response.data;
+            setLocalCategories([...localCategories, newCategory]);
+            setData('category_id', newCategory.id);
+            setIsCategoryModalOpen(false);
+            setNewCategoryName('');
+        } catch (error) {
+            console.error('Failed to create category', error);
+        } finally {
+            setIsCreatingCategory(false);
+        }
+    };
+
+    const addOption = () => {
+        setData('variant_options', [...data.variant_options, { id: Math.random().toString(36).substr(2, 9), name: '', values: [] }]);
+    };
+
+    const removeOption = (index: number) => {
+        const newOptions = [...data.variant_options];
+        newOptions.splice(index, 1);
+        setData('variant_options', newOptions);
+    };
+
+    const updateOptionName = (index: number, name: string) => {
+        const newOptions = [...data.variant_options];
+        newOptions[index].name = name;
+        setData('variant_options', newOptions);
+    };
+
+    const addOptionValue = (index: number, value: string) => {
+        if (!value.trim()) return;
+        const newOptions = [...data.variant_options];
+        if (!newOptions[index].values.includes(value.trim())) {
+            newOptions[index].values.push(value.trim());
+            setData('variant_options', newOptions);
+        }
+    };
+
+    const removeOptionValue = (optionIndex: number, valueIndex: number) => {
+        const newOptions = [...data.variant_options];
+        newOptions[optionIndex].values.splice(valueIndex, 1);
+        setData('variant_options', newOptions);
+    };
+
+    // Generate variants when options change
+    useEffect(() => {
+        if (!data.has_variants) return;
+
+        const validOptions = data.variant_options.filter((o) => o.name && o.values.length > 0);
+        if (validOptions.length === 0) {
+            setData('variants', []);
+            return;
+        }
+
+        const combinations = validOptions.reduce(
+            (acc, option) => {
+                const values = option.values.map((v) => ({ [option.name]: v }));
+                if (acc.length === 0) return values;
+
+                const result: Record<string, string>[] = [];
+                acc.forEach((a) => {
+                    values.forEach((b) => {
+                        result.push({ ...a, ...b });
+                    });
+                });
+                return result;
+            },
+            [] as Record<string, string>[],
+        );
+
+        const newVariants = combinations.map((combo, index) => {
+            const variantName = `${data.name} - ${Object.values(combo).join(' / ')}`;
+            // Try to preserve existing variant data if attributes match
+            const existing = data.variants.find((v) => JSON.stringify(v.attributes) === JSON.stringify(combo));
+
+            if (existing) {
+                return { ...existing, name: variantName };
+            }
+
+            return {
+                id: `new-${index}`,
+                name: variantName,
+                sku: `${data.sku}-${index + 1}`,
+                price: data.price,
+                cost: data.cost,
+                stock: '0',
+                attributes: combo,
+            };
+        });
+
+        setData('variants', newVariants);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data.variant_options, data.name, data.sku, data.has_variants, data.price, data.cost]);
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
@@ -152,16 +291,47 @@ export default function CreateProductOnly({ categories, units, branches }: Creat
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         <SelectItem value="none">Default</SelectItem>
-                                                        {categories.map((category) => (
+                                                        {localCategories.map((category) => (
                                                             <SelectItem key={category.id} value={String(category.id)}>
                                                                 {category.name}
                                                             </SelectItem>
                                                         ))}
                                                     </SelectContent>
                                                 </Select>
-                                                <Button type="button" variant="outline" className="shrink-0">
-                                                    Or Create New
-                                                </Button>
+                                                <Dialog open={isCategoryModalOpen} onOpenChange={setIsCategoryModalOpen}>
+                                                    <DialogTrigger asChild>
+                                                        <Button type="button" variant="outline" className="shrink-0">
+                                                            <Plus className="mr-2 h-4 w-4" />
+                                                            New
+                                                        </Button>
+                                                    </DialogTrigger>
+                                                    <DialogContent>
+                                                        <DialogHeader>
+                                                            <DialogTitle>New Category</DialogTitle>
+                                                            <DialogDescription>Create a new category for your products.</DialogDescription>
+                                                        </DialogHeader>
+                                                        <form onSubmit={handleCreateCategory} className="space-y-4">
+                                                            <div className="space-y-2">
+                                                                <FieldLabel htmlFor="new-category-name">Name</FieldLabel>
+                                                                <Input
+                                                                    id="new-category-name"
+                                                                    value={newCategoryName}
+                                                                    onChange={(e) => setNewCategoryName(e.target.value)}
+                                                                    placeholder="Category name"
+                                                                    required
+                                                                />
+                                                            </div>
+                                                            <DialogFooter>
+                                                                <Button type="button" variant="outline" onClick={() => setIsCategoryModalOpen(false)}>
+                                                                    Cancel
+                                                                </Button>
+                                                                <Button type="submit" disabled={isCreatingCategory || !newCategoryName}>
+                                                                    {isCreatingCategory ? 'Creating...' : 'Create Category'}
+                                                                </Button>
+                                                            </DialogFooter>
+                                                        </form>
+                                                    </DialogContent>
+                                                </Dialog>
                                             </div>
                                         </Field>
 
@@ -299,77 +469,253 @@ export default function CreateProductOnly({ categories, units, branches }: Creat
                                             </div>
                                         </div>
 
-                                        <Button type="button" variant="outline" className="h-9 text-xs font-medium">
-                                            Create Variants
-                                        </Button>
+                                        {!data.has_variants ? (
+                                            <>
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    className="h-9 text-xs font-medium"
+                                                    onClick={() => {
+                                                        setData('has_variants', true);
+                                                        if (data.variant_options.length === 0) {
+                                                            setData('variant_options', [
+                                                                { id: Math.random().toString(36).substr(2, 9), name: 'Size', values: [] },
+                                                            ]);
+                                                        }
+                                                    }}
+                                                >
+                                                    Create Variants
+                                                </Button>
 
-                                        <div className="grid gap-6 md:grid-cols-2">
-                                            <Field>
-                                                <FieldLabel htmlFor="price">Price</FieldLabel>
-                                                <Input
-                                                    id="price"
-                                                    type="number"
-                                                    min="0"
-                                                    step="0.01"
-                                                    placeholder="0"
-                                                    value={data.price}
-                                                    onChange={(event) => setData('price', event.target.value)}
-                                                    required
-                                                />
-                                            </Field>
-
-                                            <Field>
-                                                <FieldLabel htmlFor="cost">Cost (Per Base Unit)</FieldLabel>
-                                                <Input
-                                                    id="cost"
-                                                    type="number"
-                                                    min="0"
-                                                    step="0.01"
-                                                    placeholder="0"
-                                                    value={data.cost}
-                                                    onChange={(event) => setData('cost', event.target.value)}
-                                                />
-                                            </Field>
-
-                                            {data.tracking_mode === 'track' && (
-                                                <>
+                                                <div className="grid gap-6 md:grid-cols-2">
                                                     <Field>
-                                                        <FieldLabel htmlFor="initial_stock">Initial Stock</FieldLabel>
+                                                        <FieldLabel htmlFor="price">Price</FieldLabel>
                                                         <Input
-                                                            id="initial_stock"
+                                                            id="price"
                                                             type="number"
                                                             min="0"
-                                                            step="1"
+                                                            step="0.01"
                                                             placeholder="0"
-                                                            value={data.initial_stock}
-                                                            onChange={(event) => setData('initial_stock', event.target.value)}
+                                                            value={data.price}
+                                                            onChange={(event) => setData('price', event.target.value)}
+                                                            required
                                                         />
                                                     </Field>
 
                                                     <Field>
-                                                        <FieldLabel htmlFor="reorder_level">Reorder Level</FieldLabel>
+                                                        <FieldLabel htmlFor="cost">Cost (Per Base Unit)</FieldLabel>
                                                         <Input
-                                                            id="reorder_level"
+                                                            id="cost"
                                                             type="number"
                                                             min="0"
-                                                            step="1"
+                                                            step="0.01"
                                                             placeholder="0"
-                                                            value={data.reorder_level}
-                                                            onChange={(event) => setData('reorder_level', event.target.value)}
+                                                            value={data.cost}
+                                                            onChange={(event) => setData('cost', event.target.value)}
                                                         />
                                                     </Field>
-                                                </>
-                                            )}
-                                        </div>
+
+                                                    {data.tracking_mode === 'track' && (
+                                                        <>
+                                                            <Field>
+                                                                <FieldLabel htmlFor="initial_stock">Initial Stock</FieldLabel>
+                                                                <Input
+                                                                    id="initial_stock"
+                                                                    type="number"
+                                                                    min="0"
+                                                                    step="1"
+                                                                    placeholder="0"
+                                                                    value={data.initial_stock}
+                                                                    onChange={(event) => setData('initial_stock', event.target.value)}
+                                                                />
+                                                            </Field>
+
+                                                            <Field>
+                                                                <FieldLabel htmlFor="reorder_level">Reorder Level</FieldLabel>
+                                                                <Input
+                                                                    id="reorder_level"
+                                                                    type="number"
+                                                                    min="0"
+                                                                    step="1"
+                                                                    placeholder="0"
+                                                                    value={data.reorder_level}
+                                                                    onChange={(event) => setData('reorder_level', event.target.value)}
+                                                                />
+                                                            </Field>
+                                                        </>
+                                                    )}
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className="space-y-6">
+                                                <div className="space-y-4">
+                                                    {data.variant_options.map((option, index) => (
+                                                        <div key={option.id} className="rounded-lg border border-slate-200 p-4">
+                                                            <div className="mb-4 flex items-center justify-between">
+                                                                <div className="flex items-center gap-2">
+                                                                    <FieldLabel className="mb-0">Option Name</FieldLabel>
+                                                                    <Input
+                                                                        value={option.name}
+                                                                        onChange={(e) => updateOptionName(index, e.target.value)}
+                                                                        className="h-8 w-40"
+                                                                        placeholder="e.g. Size"
+                                                                    />
+                                                                </div>
+                                                                <Button
+                                                                    type="button"
+                                                                    variant="ghost"
+                                                                    size="sm"
+                                                                    onClick={() => removeOption(index)}
+                                                                    className="text-slate-500 hover:text-red-600"
+                                                                >
+                                                                    <Trash2 className="h-4 w-4" />
+                                                                </Button>
+                                                            </div>
+                                                            <div className="flex flex-wrap gap-2">
+                                                                {option.values.map((value, vIndex) => (
+                                                                    <span
+                                                                        key={vIndex}
+                                                                        className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-1 text-sm text-slate-700"
+                                                                    >
+                                                                        {value}
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => removeOptionValue(index, vIndex)}
+                                                                            className="ml-1 text-slate-400 hover:text-slate-600"
+                                                                        >
+                                                                            <X className="h-3 w-3" />
+                                                                        </button>
+                                                                    </span>
+                                                                ))}
+                                                                <div className="flex items-center gap-2">
+                                                                    <Input
+                                                                        className="h-8 w-32"
+                                                                        placeholder="Add value..."
+                                                                        onKeyDown={(e) => {
+                                                                            if (e.key === 'Enter') {
+                                                                                e.preventDefault();
+                                                                                addOptionValue(index, e.currentTarget.value);
+                                                                                e.currentTarget.value = '';
+                                                                            }
+                                                                        }}
+                                                                        onBlur={(e) => {
+                                                                            if (e.target.value) {
+                                                                                addOptionValue(index, e.target.value);
+                                                                                e.target.value = '';
+                                                                            }
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                    <Button type="button" variant="outline" size="sm" onClick={addOption} className="gap-2">
+                                                        <Plus className="h-4 w-4" /> Add Option
+                                                    </Button>
+                                                </div>
+
+                                                <div className="rounded-lg border border-slate-200">
+                                                    <div className="border-b border-slate-200 bg-slate-50 px-4 py-3">
+                                                        <h3 className="text-sm font-medium text-slate-700">Preview Variants</h3>
+                                                    </div>
+                                                    <div className="overflow-x-auto">
+                                                        <table className="min-w-full text-sm">
+                                                            <thead>
+                                                                <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-medium tracking-wider text-slate-500 uppercase">
+                                                                    <th className="px-4 py-2">Variant</th>
+                                                                    <th className="px-4 py-2">SKU</th>
+                                                                    <th className="w-24 px-4 py-2">Price</th>
+                                                                    <th className="w-24 px-4 py-2">Cost</th>
+                                                                    {data.tracking_mode === 'track' && <th className="w-24 px-4 py-2">Stock</th>}
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody className="divide-y divide-slate-100">
+                                                                {data.variants.map((variant, index) => (
+                                                                    <tr key={variant.id}>
+                                                                        <td className="px-4 py-2 text-slate-700">{variant.name}</td>
+                                                                        <td className="px-4 py-2">
+                                                                            <Input
+                                                                                value={variant.sku}
+                                                                                onChange={(e) => {
+                                                                                    const newVariants = [...data.variants];
+                                                                                    newVariants[index].sku = e.target.value;
+                                                                                    setData('variants', newVariants);
+                                                                                }}
+                                                                                className="h-8"
+                                                                            />
+                                                                        </td>
+                                                                        <td className="px-4 py-2">
+                                                                            <Input
+                                                                                type="number"
+                                                                                value={variant.price}
+                                                                                onChange={(e) => {
+                                                                                    const newVariants = [...data.variants];
+                                                                                    newVariants[index].price = e.target.value;
+                                                                                    setData('variants', newVariants);
+                                                                                }}
+                                                                                className="h-8"
+                                                                            />
+                                                                        </td>
+                                                                        <td className="px-4 py-2">
+                                                                            <Input
+                                                                                type="number"
+                                                                                value={variant.cost}
+                                                                                onChange={(e) => {
+                                                                                    const newVariants = [...data.variants];
+                                                                                    newVariants[index].cost = e.target.value;
+                                                                                    setData('variants', newVariants);
+                                                                                }}
+                                                                                className="h-8"
+                                                                            />
+                                                                        </td>
+                                                                        {data.tracking_mode === 'track' && (
+                                                                            <td className="px-4 py-2">
+                                                                                <Input
+                                                                                    type="number"
+                                                                                    value={variant.stock}
+                                                                                    onChange={(e) => {
+                                                                                        const newVariants = [...data.variants];
+                                                                                        newVariants[index].stock = e.target.value;
+                                                                                        setData('variants', newVariants);
+                                                                                    }}
+                                                                                    className="h-8"
+                                                                                />
+                                                                            </td>
+                                                                        )}
+                                                                    </tr>
+                                                                ))}
+                                                                {data.variants.length === 0 && (
+                                                                    <tr>
+                                                                        <td colSpan={5} className="px-4 py-8 text-center text-xs text-slate-500">
+                                                                            Add options and values to generate variants
+                                                                        </td>
+                                                                    </tr>
+                                                                )}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => {
+                                                        setData('has_variants', false);
+                                                        setData('variants', []);
+                                                    }}
+                                                    className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                                                >
+                                                    Cancel Variants & Revert to Simple Product
+                                                </Button>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
 
-                                <div className="flex items-center justify-end gap-2 border-t pt-4">
-                                    <Button variant="outline" type="button" asChild>
-                                        <Link href="/inventory">Cancel</Link>
-                                    </Button>
-                                    <Button type="submit" disabled={processing} className="bg-blue-600 hover:bg-blue-700">
-                                        Save Product
+                                <div className="flex justify-end pt-4">
+                                    <Button type="submit" size="lg" disabled={processing}>
+                                        Create Product
                                     </Button>
                                 </div>
                             </form>

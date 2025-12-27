@@ -27,7 +27,11 @@ class CategoryController extends Controller
 
         $validated['is_active'] = $request->boolean('is_active', true);
 
-        Category::create($validated);
+        $category = Category::create($validated);
+
+        if ($request->wantsJson()) {
+            return response()->json($category);
+        }
 
         return redirect()->route('categories.index')->with('success', 'Category created successfully.');
     }

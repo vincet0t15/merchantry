@@ -125,6 +125,9 @@ class ProductController extends Controller
             'cost' => ['nullable', 'numeric', 'min:0'],
             'is_active' => ['boolean'],
             'is_for_sale' => ['boolean'],
+            'has_variants' => ['boolean'],
+            'variant_options' => ['nullable', 'array'],
+            'variants' => ['nullable', 'array'],
             'stocks' => ['nullable', 'array'],
             'stocks.*.branch_id' => ['required_with:stocks.*.initial_quantity,stocks.*.reorder_level', 'integer', 'exists:branches,id'],
             'stocks.*.initial_quantity' => ['nullable', 'numeric', 'min:0'],
@@ -132,6 +135,7 @@ class ProductController extends Controller
         ]);
 
         $validated['is_active'] = $request->boolean('is_active', true);
+        $hasVariants = $request->boolean('has_variants', false);
 
         $product = Product::create([
             'name' => $validated['name'],
@@ -144,24 +148,72 @@ class ProductController extends Controller
             'cost' => $validated['cost'] ?? 0,
             'is_active' => $validated['is_active'],
             'is_for_sale' => $request->boolean('is_for_sale', true),
+            'variant_definitions' => $hasVariants ? ($validated['variant_options'] ?? []) : null,
         ]);
 
-        $stocks = $validated['stocks'] ?? [];
+        // Handle Variants
+        if ($hasVariants && !empty($validated['variants'])) {
+            foreach ($validated['variants'] as $variantData) {
+                // Ensure unique SKU for variant if not provided or conflict
+                // Ideally, UI should handle SKU uniqueness, but we can catch basic issues
 
-        foreach ($stocks as $stockData) {
-            $initialQuantity = $stockData['initial_quantity'] ?? null;
-            $reorderLevel = $stockData['reorder_level'] ?? null;
+                $variant = Product::create([
+                    'parent_id' => $product->id,
+                    'name' => $variantData['name'],
+                    'sku' => $variantData['sku'],
+                    'barcode' => $variantData['barcode'] ?? null,
+                    'type' => $product->type,
+                    'category_id' => $product->category_id,
+                    'unit_id' => $product->unit_id,
+                    'price' => $variantData['price'],
+                    'cost' => $variantData['cost'] ?? $product->cost,
+                    'is_active' => true,
+                    'is_for_sale' => true,
+                    'variant_attributes' => $variantData['attributes'] ?? [],
+                ]);
 
-            $initialQuantityValue = $initialQuantity !== null ? (float) $initialQuantity : 0.0;
-            $reorderLevelValue = $reorderLevel !== null ? (float) $reorderLevel : 0.0;
+                // Initialize stock for variant (for all branches, 0 quantity)
+                // We could use the parent's branch selection logic if we want to be consistent
+                // For now, let's just initialize for ALL branches to be safe, or just the ones passed in stocks?
+                // The stocks array in request is for the parent (or general configuration).
+                // Let's use the branches from the 'stocks' array if present, otherwise all branches?
+                // To be safe and ensure they appear in inventory, let's check which branches were selected for the parent.
 
-            Stock::create([
-                'product_id' => $product->id,
-                'branch_id' => $stockData['branch_id'],
-                'initial_quantity' => $initialQuantityValue,
-                'quantity' => $initialQuantityValue,
-                'reorder_level' => $reorderLevelValue,
-            ]);
+                $stocks = $validated['stocks'] ?? [];
+                foreach ($stocks as $stockData) {
+                    Stock::create([
+                        'product_id' => $variant->id,
+                        'branch_id' => $stockData['branch_id'],
+                        'initial_quantity' => 0, // Variants start at 0 unless specified otherwise
+                        'quantity' => 0,
+                        'reorder_level' => 0,
+                    ]);
+                }
+            }
+        } else {
+            // Handle Stocks for Parent (only if no variants, or if parent itself tracks stock - usually parents don't track stock if they have variants)
+            // But let's allow it for now, or maybe skip stock creation for parent if has_variants?
+            // If it has variants, the parent is abstract.
+
+            if (!$hasVariants) {
+                $stocks = $validated['stocks'] ?? [];
+
+                foreach ($stocks as $stockData) {
+                    $initialQuantity = $stockData['initial_quantity'] ?? null;
+                    $reorderLevel = $stockData['reorder_level'] ?? null;
+
+                    $initialQuantityValue = $initialQuantity !== null ? (float) $initialQuantity : 0.0;
+                    $reorderLevelValue = $reorderLevel !== null ? (float) $reorderLevel : 0.0;
+
+                    Stock::create([
+                        'product_id' => $product->id,
+                        'branch_id' => $stockData['branch_id'],
+                        'initial_quantity' => $initialQuantityValue,
+                        'quantity' => $initialQuantityValue,
+                        'reorder_level' => $reorderLevelValue,
+                    ]);
+                }
+            }
         }
 
         return redirect()->route('products.index')->with('success', 'Product created successfully.');
