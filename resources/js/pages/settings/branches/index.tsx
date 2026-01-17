@@ -19,8 +19,27 @@ import { Plus } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useState } from "react"
 import BranchCreate from "./create"
-export default function Page() {
+import { PaginatedDataResponse } from "@/types/pagination"
+import { BranchProps } from "@/types/branch"
+interface Props {
+    branches: PaginatedDataResponse<BranchProps>;
+    filters: {
+        search: string;
+    };
+}
+export default function Page({ branches, filters }: Props) {
     const [openCreate, setOpenCreate] = useState(false);
+    const handleClickName = (branch: BranchProps) => {
+        console.log(branch);
+    }
+
+    const handleClickEdit = (branch: BranchProps) => {
+        console.log(branch);
+    }
+
+    const handleClickDelete = (branch: BranchProps) => {
+        console.log(branch);
+    }
     return (
         <SidebarProvider>
             <AppSidebar />
@@ -70,23 +89,23 @@ export default function Page() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {/* {courses.data.length > 0 ? (
-                                        courses.data.map((course, index) => (
+                                    {branches.data.length > 0 ? (
+                                        branches.data.map((branch, index) => (
                                             <TableRow key={index} className="text-sm">
                                                 <TableCell className="cursor-pointer text-sm uppercase hover:font-bold hover:underline">
-                                                    <span onClick={() => handleClickName(course)}>{course.course_name}</span>
+                                                    <span onClick={() => handleClickName(branch)}>{branch.name}</span>
                                                 </TableCell>
-                                                <TableCell className="text-sm uppercase">{course.course_code}</TableCell>
+
                                                 <TableCell className="text-sm gap-2 flex">
                                                     <span
                                                         className="cursor-pointer text-green-500 hover:text-orange-700 hover:underline"
-                                                        onClick={() => handleClickEdit(course)}
+                                                        onClick={() => handleClickEdit(branch)}
                                                     >
                                                         Edit
                                                     </span>
                                                     <span
                                                         className="text-red-500 cursor-pointer hover:text-orange-700 hover:underline"
-                                                        onClick={() => handleClickDelete(course)}
+                                                        onClick={() => handleClickDelete(branch)}
                                                     >
                                                         Delete
                                                     </span>
@@ -100,7 +119,7 @@ export default function Page() {
                                                 No data available.
                                             </TableCell>
                                         </TableRow>
-                                    )} */}
+                                    )}
                                 </TableBody>
                             </Table>
                         </div>

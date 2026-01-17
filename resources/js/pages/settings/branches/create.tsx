@@ -60,6 +60,29 @@ export default function BranchCreate({ open, setOpen }: Props) {
                             />
                             <InputError className="text-sm text-red-500" message={errors.name} />
                         </div>
+                        <div className="grid gap-2">
+                            <Label>Address</Label>
+                            <Input
+                                placeholder="Enter branch address"
+                                className=""
+                                onChange={handleInputChange}
+                                value={data.address}
+                                name="address"
+                            />
+                            <InputError className="text-sm text-red-500" message={errors.address} />
+                        </div>
+
+                        <div className="grid gap-2">
+                            <Label>Phone</Label>
+                            <Input
+                                placeholder="Enter branch phone"
+                                className=""
+                                onChange={handleInputChange}
+                                value={data.phone}
+                                name="phone"
+                            />
+                            <InputError className="text-sm text-red-500" message={errors.phone} />
+                        </div>
 
 
                     </div>
