@@ -29,5 +29,6 @@ Route::middleware(['auth', 'active'])->group(function () {
 
 
     // Branches
-    Route::resource('branches', BranchController::class);
+    Route::get('branches', [BranchController::class, 'index'])->name('branches.index');
+    Route::post('branches', [BranchController::class, 'store'])->name('branches.store');
 });
