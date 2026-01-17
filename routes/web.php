@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BranchController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -25,4 +26,8 @@ Route::middleware(['auth', 'active'])->group(function () {
     })->name('dashboard');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+
+
+    // Branches
+    Route::resource('branches', BranchController::class);
 });

@@ -1,6 +1,6 @@
 'use client';
 
-import { AudioWaveform, BookOpen, Bot, Command, Frame, GalleryVerticalEnd, Map, PieChart, Settings2, SquareTerminal } from 'lucide-react';
+import { AudioWaveform, BookOpen, Bot, Building, Building2, Command, Frame, GalleryVerticalEnd, Map, PieChart, Settings2, SquareTerminal } from 'lucide-react';
 import * as React from 'react';
 
 import { NavMain } from '@/components/nav-main';
@@ -122,9 +122,9 @@ const data = {
     ],
     projects: [
         {
-            name: 'Design Engineering',
-            url: '#',
-            icon: Frame,
+            name: 'Branch',
+            url: '/branches',
+            icon: Building2,
         },
         {
             name: 'Sales & Marketing',
