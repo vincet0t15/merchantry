@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Field, FieldDescription, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 import { register } from '@/routes';
 import login from '@/routes/login';
@@ -30,40 +29,38 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
     };
     return (
         <div className={cn('flex flex-col gap-6', className)} {...props}>
-            <Card>
-                <CardHeader className="text-center">
-                    <CardTitle className="text-xl">Welcome back</CardTitle>
-                    <CardDescription>Login with your Apple or Google account</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <form onSubmit={handleSubmit}>
-                        <FieldGroup>
-                            <Field>
-                                <FieldLabel htmlFor="username">Username</FieldLabel>
-                                <Input id="username" type="text" placeholder="johndoe" required value={data.username} onChange={handleInputChange} />
-                            </Field>
-                            <Field>
-                                <div className="flex items-center">
-                                    <FieldLabel htmlFor="password">Password</FieldLabel>
-                                    <a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">
-                                        Forgot your password?
-                                    </a>
-                                </div>
-                                <Input id="password" type="password" required value={data.password} onChange={handleInputChange} />
-                            </Field>
-                            <Field>
-                                <Button type="submit">Login</Button>
-                                <FieldDescription className="text-center">
-                                    Don&apos;t have an account? <Link href={register()}>Sign up</Link>
-                                </FieldDescription>
-                            </Field>
-                        </FieldGroup>
-                    </form>
-                </CardContent>
-            </Card>
-            <FieldDescription className="px-6 text-center">
+            <form onSubmit={handleSubmit}>
+                <div className="flex flex-col gap-6">
+                    <div className="flex flex-col items-center gap-2 text-center">
+                        <h1 className="text-2xl font-bold">Login to your account</h1>
+                        <p className="text-muted-foreground text-sm text-balance">
+                            Enter your username below to login to your account
+                        </p>
+                    </div>
+                    <div className="grid gap-6">
+                        <div className="grid gap-2">
+                            <Label >Username</Label>
+                            <Input id="username" type="text" placeholder="johndoe" required value={data.username} onChange={handleInputChange} />
+                        </div>
+                        <div className="grid gap-2">
+
+                            <Input id="password" type="password" required value={data.password} onChange={handleInputChange} />
+                        </div>
+                        <Button type="submit" className="w-full">
+                            Login
+                        </Button>
+                    </div>
+                    <div className="text-center text-sm">
+                        Don&apos;t have an account?{" "}
+                        <Link href={register()} className="underline underline-offset-4">
+                            Sign up
+                        </Link>
+                    </div>
+                </div>
+            </form>
+            <div className="text-muted-foreground px-6 text-center text-xs text-balance [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
                 By clicking continue, you agree to our <a href="#">Terms of Service</a> and <Link href="#">Privacy Policy</Link>.
-            </FieldDescription>
+            </div>
         </div>
     );
 }

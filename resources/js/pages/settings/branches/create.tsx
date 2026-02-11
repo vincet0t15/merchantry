@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import branches from '@/routes/branches';
-import { BranchCreateProps, BranchProps } from '@/types/branch';
+import { BranchCreateProps } from '@/types/branch';
 
 
 import { useForm } from '@inertiajs/react';
@@ -21,8 +21,6 @@ export default function BranchCreate({ open, setOpen }: Props) {
     const { data, setData, processing, errors, post, reset } = useForm<BranchCreateProps>({
         name: '',
         address: '',
-        phone: '',
-        location: '',
     });
 
     const submit: FormEventHandler = (e) => {
@@ -71,25 +69,11 @@ export default function BranchCreate({ open, setOpen }: Props) {
                             />
                             <InputError className="text-sm text-red-500" message={errors.address} />
                         </div>
-
-                        <div className="grid gap-2">
-                            <Label>Phone</Label>
-                            <Input
-                                placeholder="Enter branch phone"
-                                className=""
-                                onChange={handleInputChange}
-                                value={data.phone}
-                                name="phone"
-                            />
-                            <InputError className="text-sm text-red-500" message={errors.phone} />
-                        </div>
-
-
                     </div>
                     <DialogFooter>
-                        <Button className="cursor-pointer bg-teal-800 text-white hover:bg-teal-900 hover:text-white w-[80px]" type="submit" disabled={processing} variant={'outline'}  >
+                        <Button className="cursor-pointer bg-teal-800 text-white hover:bg-teal-900 hover:text-white " type="submit" disabled={processing} variant={'outline'}  >
                             {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                            Save
+                            Create Branch
                         </Button>
                     </DialogFooter>
                 </form>

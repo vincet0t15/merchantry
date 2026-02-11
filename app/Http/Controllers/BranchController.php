@@ -18,7 +18,7 @@ class BranchController extends Controller
             ->when($search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
                     ->orWhere('address', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%");
+                ;
             })
             ->paginate(10)
             ->withQueryString();
@@ -40,11 +40,29 @@ class BranchController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
-            'phone' => 'nullable|string|max:255',
         ]);
 
         Branch::create($request->all());
 
         return redirect()->back()->with('success', 'Branch created successfully');
+    }
+
+    public function update(Request $request, Branch $branch)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+        ]);
+
+        $branch->update($request->all());
+
+        return redirect()->back()->with('success', 'Branch updated successfully');
+    }
+
+    public function destroy(Branch $branch)
+    {
+        $branch->delete();
+
+        return redirect()->back()->with('success', 'Branch deleted successfully');
     }
 }
