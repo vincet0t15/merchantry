@@ -10,14 +10,11 @@ import { TeamSwitcher } from '@/components/team-switcher';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar';
 import account from '@/routes/account';
 import employees from '@/routes/employees';
+import { usePage } from '@inertiajs/react';
+import { SharedData } from '@/types';
 
 // This is sample data.
 const data = {
-    user: {
-        name: 'shadcn',
-        email: 'm@example.com',
-        avatar: '',
-    },
     teams: [
         {
             name: 'Acme Inc',
@@ -142,6 +139,7 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+    const { auth } = usePage<SharedData>().props;
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
@@ -152,7 +150,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <NavProjects projects={data.projects} />
             </SidebarContent>
             <SidebarFooter>
-                <NavUser user={data.user} />
+                <NavUser user={auth.user} />
             </SidebarFooter>
             <SidebarRail />
         </Sidebar>
