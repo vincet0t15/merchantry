@@ -71,6 +71,7 @@ export default function EmployeeCreate({ open, setOpen, branches }: Props) {
                                 value={data.branch_id ? String(data.branch_id) : '0'}
                                 onChange={handleChangeBranch}
                                 name="branch_id"
+                                widthClass="w-full"
                             />
                             <InputError className="text-sm text-red-500" message={errors.branch_id} />
                         </div>
