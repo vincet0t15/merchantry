@@ -20,6 +20,7 @@ class EmployeeController extends Controller
             ->when($request->query('branch_id'), function ($query) use ($request) {
                 $query->where('branch_id', $request->query('branch_id'));
             })
+            ->with('branch')
             ->paginate(25)
             ->withQueryString();
 

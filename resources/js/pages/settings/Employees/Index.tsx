@@ -108,6 +108,7 @@ export default function EmployeeIndex({ employees, branches, filters }: Props) {
                                     <TableRow>
                                         <TableHead className="text-primary font-bold">Account Name</TableHead>
                                         <TableHead className="text-primary font-bold">Username</TableHead>
+                                        <TableHead className="text-primary font-bold">Branch</TableHead>
                                         <TableHead className="text-primary font-bold">Status</TableHead>
                                         <TableHead className="text-primary font-bold text-right">Action</TableHead>
                                     </TableRow>
@@ -122,7 +123,9 @@ export default function EmployeeIndex({ employees, branches, filters }: Props) {
                                                 <TableCell className="text-sm ">
                                                     <span className="text-sm">{employee.username}</span>
                                                 </TableCell>
-
+                                                <TableCell className="text-sm ">
+                                                    <span className="text-sm">{employee.branch.name}</span>
+                                                </TableCell>
                                                 <TableCell className="text-sm">
                                                     <Switch
                                                         checked={employee.is_active}
