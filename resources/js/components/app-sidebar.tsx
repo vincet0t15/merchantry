@@ -129,11 +129,6 @@ const data = {
             icon: Building2,
         },
         {
-            name: 'Account',
-            url: account.index.url(),
-            icon: PieChart,
-        },
-        {
             name: 'Employees',
             url: employees.index.url(),
             icon: User2Icon,
