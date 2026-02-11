@@ -1,6 +1,6 @@
 'use client';
 
-import { AudioWaveform, BookOpen, Bot, Building, Building2, Command, Frame, GalleryVerticalEnd, Map, PieChart, Settings2, SquareTerminal } from 'lucide-react';
+import { AudioWaveform, BookOpen, Bot, Building, Building2, Command, Frame, GalleryVerticalEnd, Map, PieChart, Settings2, SquareTerminal, User2Icon } from 'lucide-react';
 import * as React from 'react';
 
 import { NavMain } from '@/components/nav-main';
@@ -9,6 +9,7 @@ import { NavUser } from '@/components/nav-user';
 import { TeamSwitcher } from '@/components/team-switcher';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar';
 import account from '@/routes/account';
+import employees from '@/routes/employees';
 
 // This is sample data.
 const data = {
@@ -131,6 +132,11 @@ const data = {
             name: 'Account',
             url: account.index.url(),
             icon: PieChart,
+        },
+        {
+            name: 'Employees',
+            url: employees.index.url(),
+            icon: User2Icon,
         },
         {
             name: 'Travel',

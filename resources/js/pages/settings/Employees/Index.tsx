@@ -18,19 +18,20 @@ import {
 import { Plus } from "lucide-react"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useState } from "react"
-
 import { PaginatedDataResponse } from "@/types/pagination"
 import { BranchProps } from "@/types/branch"
-
 import Pagination from "@/components/paginationData"
 import { User } from "@/types"
+import { EmployeeProps } from "@/types/employee"
+import EmployeeCreate from "./create"
 interface Props {
-    users: PaginatedDataResponse<User>;
+    employees: PaginatedDataResponse<EmployeeProps>;
+    branches: BranchProps[];
     filters: {
         search: string;
     };
 }
-export default function AccountIndex({ users, filters }: Props) {
+export default function EmployeeIndex({ employees, branches, filters }: Props) {
     const [openCreate, setOpenCreate] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [openEdit, setOpenEdit] = useState(false);
@@ -66,7 +67,7 @@ export default function AccountIndex({ users, filters }: Props) {
                                 </BreadcrumbItem>
                                 <BreadcrumbSeparator className="hidden md:block" />
                                 <BreadcrumbItem>
-                                    <BreadcrumbPage>Account</BreadcrumbPage>
+                                    <BreadcrumbPage>Employees</BreadcrumbPage>
                                 </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
@@ -77,7 +78,7 @@ export default function AccountIndex({ users, filters }: Props) {
                         <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                             <Button className="cursor-pointer " onClick={() => setOpenCreate(true)}>
                                 <Plus className="size-4" />
-                                <span className="rounded-sm lg:inline">Account</span>
+                                <span className="rounded-sm lg:inline">Employees</span>
                             </Button>
 
                             <div className="flex items-center gap-2">
@@ -97,21 +98,19 @@ export default function AccountIndex({ users, filters }: Props) {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {users.data.length > 0 ? (
-                                        users.data.map((user, index) => (
+                                    {employees.data.length > 0 ? (
+                                        employees.data.map((employee, index) => (
                                             <TableRow key={index} className="text-sm">
                                                 <TableCell className=" text-sm uppercase ">
-                                                    <span>{user.name}</span>
+                                                    <span>{employee.name}</span>
                                                 </TableCell>
                                                 <TableCell className="text-sm ">
-                                                    <span className="text-sm">{user.username}</span>
+                                                    <span className="text-sm">{employee.username}</span>
                                                 </TableCell>
-                                                <TableCell className="text-sm ">
-                                                    <span className="text-sm">{user.role === true ? 'Admin' : 'User'}</span>
-                                                </TableCell>
+
                                                 <TableCell className="text-sm">
-                                                    <span className={user.is_active ? "text-green-500" : "text-red-500"}>
-                                                        {user.is_active ? "Active" : "Inactive"}
+                                                    <span className={employee.is_active ? "text-green-500" : "text-red-500"}>
+                                                        {employee.is_active ? "Active" : "Inactive"}
                                                     </span>
                                                 </TableCell>
 
@@ -141,9 +140,11 @@ export default function AccountIndex({ users, filters }: Props) {
                             </Table>
                         </div>
                         <div>
-                            <Pagination data={users} />
+                            <Pagination data={employees} />
                         </div>
                     </div>
+
+                    {openCreate && <EmployeeCreate open={openCreate} setOpen={setOpenCreate} branches={branches} />}
                 </div>
             </SidebarInset>
         </SidebarProvider>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\EmployeeController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -38,5 +39,11 @@ Route::middleware(['auth', 'active'])->group(function () {
     // Account
     Route::middleware('admin')->group(function () {
         Route::get('account', [AccountController::class, 'index'])->name('account.index');
+
+        // Employees
+        Route::get('employees', [EmployeeController::class, 'index'])->name('employees.index');
+        Route::post('employees', [EmployeeController::class, 'store'])->name('employees.store');
     });
+
+    // 
 });

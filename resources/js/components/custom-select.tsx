@@ -19,7 +19,6 @@ interface CustomSelectProps {
     label?: string;
     widthClass?: string;
     disabled?: boolean;
-    id: string;
     name: string;
     tabIndex?: number;
 }
