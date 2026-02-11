@@ -22,6 +22,8 @@ import BranchCreate from "./create"
 import { PaginatedDataResponse } from "@/types/pagination"
 import { BranchProps } from "@/types/branch"
 import BranchEdit from "./edit"
+import DeleteBranch from "./delete"
+import Pagination from "@/components/paginationData"
 interface Props {
     branches: PaginatedDataResponse<BranchProps>;
     filters: {
@@ -32,14 +34,18 @@ export default function Page({ branches, filters }: Props) {
     const [openCreate, setOpenCreate] = useState(false);
     const [selectedBranch, setSelectedBranch] = useState<BranchProps | null>(null);
     const [openEdit, setOpenEdit] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
+
+    const handleClickDelete = (branch: BranchProps) => {
+        setSelectedBranch(branch);
+        setOpenDelete(true);
+    }
     const handleClickEdit = (branch: BranchProps) => {
         setSelectedBranch(branch);
         setOpenEdit(true);
     }
 
-    const handleClickDelete = (branch: BranchProps) => {
-        console.log(branch);
-    }
+
     return (
         <SidebarProvider>
             <AppSidebar />
@@ -123,11 +129,10 @@ export default function Page({ branches, filters }: Props) {
                             </Table>
                         </div>
                         <div>
-                            {/* <Pagination data={courses} /> */}
+                            <Pagination data={branches} />
                         </div>
 
-
-
+                        {openDelete && selectedBranch && <DeleteBranch open={openDelete} setOpen={setOpenDelete} branch={selectedBranch!} />}
                         {openCreate && <BranchCreate open={openCreate} setOpen={setOpenCreate} />}
                         {openEdit && selectedBranch && <BranchEdit open={openEdit} setOpen={setOpenEdit} branch={selectedBranch!} />}
                     </div>
