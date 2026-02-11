@@ -83,20 +83,19 @@ export default function Page({ branches, filters }: Props) {
                             <Table>
                                 <TableHeader className="bg-muted/50">
                                     <TableRow>
-                                        <TableHead className="text-primary font-bold">Course Name</TableHead>
-                                        <TableHead className="text-primary font-bold">Course Code</TableHead>
-                                        <TableHead className="text-primary font-bold">Action</TableHead>
+                                        <TableHead className="text-primary font-bold">Branch Name</TableHead>
+                                        <TableHead className="text-primary font-bold text-right">Action</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {branches.data.length > 0 ? (
                                         branches.data.map((branch, index) => (
                                             <TableRow key={index} className="text-sm">
-                                                <TableCell className="cursor-pointer text-sm uppercase hover:font-bold hover:underline">
-                                                    <span onClick={() => handleClickName(branch)}>{branch.name}</span>
+                                                <TableCell className=" text-sm uppercase ">
+                                                    <span>{branch.name}</span>
                                                 </TableCell>
 
-                                                <TableCell className="text-sm gap-2 flex">
+                                                <TableCell className="text-sm gap-2 flex justify-end">
                                                     <span
                                                         className="cursor-pointer text-green-500 hover:text-orange-700 hover:underline"
                                                         onClick={() => handleClickEdit(branch)}
