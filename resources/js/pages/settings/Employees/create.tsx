@@ -72,13 +72,14 @@ export default function EmployeeCreate({ open, setOpen, branches }: Props) {
                                 onChange={handleChangeBranch}
                                 name="branch_id"
                                 widthClass="w-full"
+
                             />
                             <InputError className="text-sm text-red-500" message={errors.branch_id} />
                         </div>
                         <div className="grid gap-2">
                             <Label>Name</Label>
                             <Input
-                                placeholder="Enter branch name"
+                                placeholder="Enter employee name"
                                 className=""
                                 onChange={handleInputChange}
                                 value={data.name}
@@ -87,9 +88,9 @@ export default function EmployeeCreate({ open, setOpen, branches }: Props) {
                             <InputError className="text-sm text-red-500" message={errors.name} />
                         </div>
                         <div className="grid gap-2">
-                            <Label>Address</Label>
+                            <Label>Username</Label>
                             <Input
-                                placeholder="Enter branch address"
+                                placeholder="Enter username"
                                 className=""
                                 onChange={handleInputChange}
                                 value={data.username}
@@ -100,7 +101,7 @@ export default function EmployeeCreate({ open, setOpen, branches }: Props) {
                         <div className="grid gap-2">
                             <Label>Password</Label>
                             <Input
-                                placeholder="Enter branch password"
+                                placeholder="Enter password"
                                 className=""
                                 onChange={handleInputChange}
                                 value={data.password}
@@ -112,7 +113,7 @@ export default function EmployeeCreate({ open, setOpen, branches }: Props) {
                     <DialogFooter>
                         <Button className="cursor-pointer bg-teal-800 text-white hover:bg-teal-900 hover:text-white " type="submit" disabled={processing} variant={'outline'}  >
                             {processing && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                            Create Branch
+                            Create Employee
                         </Button>
                     </DialogFooter>
                 </form>

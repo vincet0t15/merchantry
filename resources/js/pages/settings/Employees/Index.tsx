@@ -92,7 +92,6 @@ export default function EmployeeIndex({ employees, branches, filters }: Props) {
                                     <TableRow>
                                         <TableHead className="text-primary font-bold">Account Name</TableHead>
                                         <TableHead className="text-primary font-bold">Username</TableHead>
-                                        <TableHead className="text-primary font-bold">Role</TableHead>
                                         <TableHead className="text-primary font-bold">Status</TableHead>
                                         <TableHead className="text-primary font-bold text-right">Action</TableHead>
                                     </TableRow>

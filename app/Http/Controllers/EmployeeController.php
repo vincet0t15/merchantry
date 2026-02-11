@@ -14,10 +14,13 @@ class EmployeeController extends Controller
 
         $search = $request->query('search');
 
-        $employess = Employee::where('branch_id', $request->user()->branch_id)
-            ->when($search, function ($query) use ($search) {
-                $query->where('name', 'like', "%{$search}%");
-            })->paginate(25)
+        $employess = Employee::when($search, function ($query) use ($search) {
+            $query->where('name', 'like', "%{$search}%");
+        })
+            ->when($request->query('branch_id'), function ($query) use ($request) {
+                $query->where('branch_id', $request->query('branch_id'));
+            })
+            ->paginate(25)
             ->withQueryString();
 
         $branches = Branch::where('is_active', true)
@@ -39,13 +42,11 @@ class EmployeeController extends Controller
             'username' => 'required|string|max:255|unique:employees,username',
             'password' => 'required|string|min:8|max:255',
             'branch_id' => 'required|integer|exists:branches,id',
-            'is_active' => 'required|boolean',
         ]);
 
         $validated['password'] = bcrypt($validated['password']);
+        Employee::create($validated);
 
-        $employee = Employee::create($validated);
-
-        return redirect()->route('settings.employees.index')->with('success', 'Employee created successfully');
+        return redirect()->back()->with('success', 'Employee created successfully');
     }
 }
