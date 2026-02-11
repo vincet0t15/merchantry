@@ -14,13 +14,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
         User::factory()->create([
             'name' => 'Super Admin',
             'username' => 'admin',
             'password' => Hash::make('admin123'),
             'is_active' => true,
+            'role' => true,
         ]);
     }
 }

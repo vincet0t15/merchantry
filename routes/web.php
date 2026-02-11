@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BranchController;
 use Illuminate\Support\Facades\Auth;
@@ -33,4 +34,9 @@ Route::middleware(['auth', 'active'])->group(function () {
     Route::post('branches', [BranchController::class, 'store'])->name('branches.store');
     Route::put('branches/{branch}', [BranchController::class, 'update'])->name('branches.update');
     Route::delete('branches/{branch}', [BranchController::class, 'destroy'])->name('branches.destroy');
+
+    // Account
+    Route::middleware('admin')->group(function () {
+        Route::get('account', [AccountController::class, 'index'])->name('account.index');
+    });
 });

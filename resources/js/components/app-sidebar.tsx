@@ -8,6 +8,7 @@ import { NavProjects } from '@/components/nav-projects';
 import { NavUser } from '@/components/nav-user';
 import { TeamSwitcher } from '@/components/team-switcher';
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar';
+import account from '@/routes/account';
 
 // This is sample data.
 const data = {
@@ -127,8 +128,8 @@ const data = {
             icon: Building2,
         },
         {
-            name: 'Sales & Marketing',
-            url: '#',
+            name: 'Account',
+            url: account.index.url(),
             icon: PieChart,
         },
         {
