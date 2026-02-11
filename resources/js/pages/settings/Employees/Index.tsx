@@ -24,6 +24,11 @@ import Pagination from "@/components/paginationData"
 import { User } from "@/types"
 import { EmployeeProps } from "@/types/employee"
 import EmployeeCreate from "./create"
+import { Switch } from "@/components/ui/switch"
+import { router } from "@inertiajs/react"
+import * as employeeRoutes from '@/routes/employees'
+import { toast } from "sonner"
+
 interface Props {
     employees: PaginatedDataResponse<EmployeeProps>;
     branches: BranchProps[];
@@ -44,6 +49,17 @@ export default function EmployeeIndex({ employees, branches, filters }: Props) {
     const handleClickEdit = (user: User) => {
         setSelectedUser(user);
         setOpenEdit(true);
+    }
+
+    const handleToggleStatus = (employee: EmployeeProps) => {
+        router.patch(employeeRoutes.toggle.url(employee.id), {}, {
+            onSuccess: () => {
+                toast.success("Employee status updated successfully")
+            },
+            onError: () => {
+                toast.error("Failed to update employee status")
+            }
+        });
     }
 
 
@@ -108,9 +124,10 @@ export default function EmployeeIndex({ employees, branches, filters }: Props) {
                                                 </TableCell>
 
                                                 <TableCell className="text-sm">
-                                                    <span className={employee.is_active ? "text-green-500" : "text-red-500"}>
-                                                        {employee.is_active ? "Active" : "Inactive"}
-                                                    </span>
+                                                    <Switch
+                                                        checked={employee.is_active}
+                                                        onCheckedChange={() => handleToggleStatus(employee)}
+                                                    />
                                                 </TableCell>
 
                                                 <TableCell className="text-sm gap-2 flex justify-end">
