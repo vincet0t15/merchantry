@@ -21,6 +21,7 @@ import { useState } from "react"
 import BranchCreate from "./create"
 import { PaginatedDataResponse } from "@/types/pagination"
 import { BranchProps } from "@/types/branch"
+import BranchEdit from "./edit"
 interface Props {
     branches: PaginatedDataResponse<BranchProps>;
     filters: {
@@ -29,12 +30,11 @@ interface Props {
 }
 export default function Page({ branches, filters }: Props) {
     const [openCreate, setOpenCreate] = useState(false);
-    const handleClickName = (branch: BranchProps) => {
-        console.log(branch);
-    }
-
+    const [selectedBranch, setSelectedBranch] = useState<BranchProps | null>(null);
+    const [openEdit, setOpenEdit] = useState(false);
     const handleClickEdit = (branch: BranchProps) => {
-        console.log(branch);
+        setSelectedBranch(branch);
+        setOpenEdit(true);
     }
 
     const handleClickDelete = (branch: BranchProps) => {
@@ -129,6 +129,7 @@ export default function Page({ branches, filters }: Props) {
 
 
                         {openCreate && <BranchCreate open={openCreate} setOpen={setOpenCreate} />}
+                        {openEdit && selectedBranch && <BranchEdit open={openEdit} setOpen={setOpenEdit} branch={selectedBranch!} />}
                     </div>
                 </div>
             </SidebarInset>
