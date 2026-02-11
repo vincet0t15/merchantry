@@ -32,14 +32,15 @@ export default function CustomSelect({
     disabled,
     tabIndex,
 }: CustomSelectProps) {
+    const safeValue = value === '0' || value === '' ? undefined : value;
     return (
         <Select
-            value={value || undefined}
+            value={safeValue}
             onValueChange={onChange}
             disabled={disabled}
         >
             <SelectTrigger className={widthClass} tabIndex={tabIndex}>
-                {value == '0' ? placeholder : <SelectValue />}
+                <SelectValue placeholder={placeholder} />
             </SelectTrigger>
             <SelectContent>
                 <SelectGroup>
