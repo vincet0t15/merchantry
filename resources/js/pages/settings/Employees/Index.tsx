@@ -28,6 +28,7 @@ import { Switch } from "@/components/ui/switch"
 import { router } from "@inertiajs/react"
 import * as employeeRoutes from '@/routes/employees'
 import { toast } from "sonner"
+import EmployeeEdit from "./edit"
 
 interface Props {
     employees: PaginatedDataResponse<EmployeeProps>;
@@ -38,16 +39,16 @@ interface Props {
 }
 export default function EmployeeIndex({ employees, branches, filters }: Props) {
     const [openCreate, setOpenCreate] = useState(false);
-    const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    const [selectedEmployee, setSelectedEmployee] = useState<EmployeeProps | null>(null);
     const [openEdit, setOpenEdit] = useState(false);
     const [openDelete, setOpenDelete] = useState(false);
 
-    const handleClickDelete = (user: User) => {
-        setSelectedUser(user);
+    const handleClickDelete = (employee: EmployeeProps) => {
+        setSelectedEmployee(employee);
         setOpenDelete(true);
     }
-    const handleClickEdit = (user: User) => {
-        setSelectedUser(user);
+    const handleClickEdit = (employee: EmployeeProps) => {
+        setSelectedEmployee(employee);
         setOpenEdit(true);
     }
 
@@ -136,6 +137,8 @@ export default function EmployeeIndex({ employees, branches, filters }: Props) {
                                                 <TableCell className="text-sm gap-2 flex justify-end">
                                                     <span
                                                         className="cursor-pointer text-green-500 hover:text-orange-700 hover:underline"
+
+                                                        onClick={() => handleClickEdit(employee)}
                                                     >
                                                         Edit
                                                     </span>
@@ -164,6 +167,7 @@ export default function EmployeeIndex({ employees, branches, filters }: Props) {
                     </div>
 
                     {openCreate && <EmployeeCreate open={openCreate} setOpen={setOpenCreate} branches={branches} />}
+                    {openEdit && selectedEmployee && <EmployeeEdit open={openEdit} setOpen={setOpenEdit} employee={selectedEmployee} branches={branches} />}
                 </div>
             </SidebarInset>
         </SidebarProvider>

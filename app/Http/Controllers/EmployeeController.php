@@ -59,4 +59,25 @@ class EmployeeController extends Controller
 
         return redirect()->back()->with('success', 'Employee status updated successfully');
     }
+
+    public function update(Request $request, Employee $employee)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:employees,username,' . $employee->id,
+            'branch_id' => 'required|integer|exists:branches,id',
+            'password' => 'nullable|string|min:6'
+        ]);
+
+        // Only update password if filled
+        if (!empty($validated['password'])) {
+            $validated['password'] = bcrypt($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
+
+        $employee->update($validated);
+
+        return redirect()->back()->with('success', 'Employee updated successfully.');
+    }
 }

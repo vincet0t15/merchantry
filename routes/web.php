@@ -44,6 +44,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('employees', [EmployeeController::class, 'index'])->name('employees.index');
         Route::post('employees', [EmployeeController::class, 'store'])->name('employees.store');
         Route::patch('employees/{employee}/toggle', [EmployeeController::class, 'toggleStatus'])->name('employees.toggle');
+        Route::put('employees/{employee}', [EmployeeController::class, 'update'])->name('employees.update');
     });
 
     // 
